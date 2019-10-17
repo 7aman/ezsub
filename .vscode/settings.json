@@ -1,0 +1,18 @@
+{
+    "files.exclude": {
+        "**/__pycache__": true,
+        "**/*.egg-info": true,
+        "**/dist": true,
+        "**/build": true
+    },
+    "cSpell.words": [
+        "amaaan",
+        "calver",
+        "ezsub",
+        "gmail",
+        "posix",
+        "semver",
+        "subscene",
+        "zaman"
+    ]
+}
