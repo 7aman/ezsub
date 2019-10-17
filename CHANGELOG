@@ -1,4 +1,17 @@
+version: 2019.10.26
+
+Core:
++ commands: download, unzip, clean, backup, update, login, info, history
+
+Dev:
++ travis
++ logging
++ scripts
++ spellcheck
+
+-------------------
+
 version: 2019.10.17
 
-Core
+Core:
 + initial empty release

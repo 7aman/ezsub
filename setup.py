@@ -3,16 +3,17 @@
 
 from setuptools import setup
 
-__version__ = '' # fill below
-__author__ = 'Zaman'
-__contact__ = '7amaaan@gmail.com'
-__url__ = 'http://github.com/7aman/ezsub'
-__license__ = 'MIT'
+# package information (is filling from ezsub/const.py)
+__version__ = ''
+__author__ = ''
+__contact__ = ''
+__url__ = ''
+__license__ = ''
 
 
-# Get the __version__ from ezsub/tools/version.py without importing the package
-exec(compile(open('ezsub/tools/version.py').read(),
-             'ezsub/tools/version.py', 'exec'))
+# Get the information from ezsub/const.py without importing the package
+exec(compile(open('ezsub/const.py').read(),
+             'ezsub/const.py', 'exec'))
 
 with open("README.md", encoding='utf-8') as f:
     long_description = f.read()
@@ -26,13 +27,17 @@ setup(
     url=__url__,
     author=__author__,
     author_email=__contact__,
-    license= __license__,
-    packages=['ezsub', 'ezsub.tools'],
+    license=__license__,
+    packages=['ezsub', 'ezsub.cli', 'ezsub.cli.commands'],
     entry_points={
         'console_scripts': ['ezsub = ezsub.cli:main'],
     },
-    install_requires=[],
-    python_requires='>=3.6',
+    install_requires=[
+        'bs4',
+        'requests-futures',
+        'rarfile'
+    ],
+    python_requires='>=3.7',
     zip_safe=False,
     keywords='subtitle movie subscene',
     include_package_data=True,

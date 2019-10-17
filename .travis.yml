@@ -1,0 +1,43 @@
+os:
+  - linux
+dist: bionic
+sudo: required
+git:
+  depth: false
+language: python
+python:
+  - "3.7"
+  - "3.8"
+
+addons:
+  apt:
+    update: true
+    packages:
+      unrar
+      tree
+
+
+install:
+  - python3 -m pip install -r requirements.txt
+  - python3 setup.py install
+
+script:
+ - yes n | ezsub update
+ - ezsub login
+ - ezsub cfg set Defaults.site hastisub subf2m
+ - ezsub dl -t friends first season -l en fa -a -g -O -s subscene
+ - ezsub x -t friends first season -l en fa -a -g -O
+ - ezsub history run 2
+ - ezsub info
+ - ezsub backup -O
+ - ezsub clean -t friends first season -l en -a --zero
+ - ezsub clean -t friends first season -l en fa -a
+ - ezsub cfg show
+ - ezsub h show
+
+after_success:
+  - cat ~/.ezsub/ezsub.log
+  - cat ~/.ezsub/user.conf
+  - cat ~/.ezsub/history.txt
+  - tree ~/.ezsub/
+  - tree ~/Downloads/ezsub

@@ -6,13 +6,37 @@
         "**/build": true
     },
     "cSpell.words": [
+        "abbrs",
         "amaaan",
         "calver",
+        "distros",
+        "dlink",
         "ezsub",
         "gmail",
+        "hastisub",
+        "idsrv",
+        "lngs",
+        "m",
+        "mkdir",
+        "nargs",
+        "noprofile",
+        "optionxform",
         "posix",
+        "rarfile",
+        "riverdale",
+        "rmdir",
+        "rmtree",
+        "searchbytitle",
         "semver",
+        "shutil",
+        "strftime",
+        "strptime",
+        "subf",
         "subscene",
-        "zaman"
+        "tbody",
+        "virtualenv",
+        "xsrf",
+        "zaman",
+        "zipfile"
     ]
 }
