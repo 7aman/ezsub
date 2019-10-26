@@ -29,7 +29,7 @@ def add_to_history(argv):
     else:
         with open(path, 'r') as file:
             commands = file.readlines()
-        if not command == commands[0]:
+        if not (commands and command == commands[0]):  # if history is clear or command is new
             commands.insert(0, command)
         with open(path, 'w') as file:
             file.writelines(commands)
@@ -40,8 +40,9 @@ def show_history():
     with open(const.HISTORY, 'r') as file:
         lines = file.readlines()
     for i, line in enumerate(lines):
-        to_screen(f'{i+1}: ezsub {line}', end='')
+        to_screen(f"{i+1}: {const.PROGRAMNAME} {line[:-1]}") # last character is new line.
     raise JobDone
+
 
 def get_from_history(linenumber):
     with open(const.HISTORY, 'r') as file:

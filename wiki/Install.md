@@ -47,7 +47,7 @@ python -m pip install --upgrade ezsub
 pip install --upgrade ezsub
 ```
 
-And if you have `git` installed on your system, you can install "in-progress" version from github repository.
+You can also install "in-progress" version from github repository.
 
 - Install latest "in-progress" version from github (not recommended):
 

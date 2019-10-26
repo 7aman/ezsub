@@ -11,8 +11,9 @@ from requests_futures.sessions import FuturesSession
 from ezsub import const
 from ezsub.conf import UserConf
 from ezsub.utils import to_screen
-from ezsub.errors import InvalidSiteError, LoginFailedError
+from ezsub.errors import InvalidSiteError, LoginFailedError, NoSiteIsAvailableError
 
+cur = const.Curser
 
 def available(pagetext):
     for sign in const.SIGNS:
@@ -21,8 +22,7 @@ def available(pagetext):
             return False
     for sign in const.BAD:
         if sign.lower() in str(pagetext).lower():
-            to_screen(
-                '\n[Warning] Bad request. maybe captcha is expired. login again with "ezsub login"\n')
+            to_screen("\nBad request. maybe captcha is expired. login again with 'ezsub login'", style="warn")
             return False
     return True
 
@@ -33,7 +33,7 @@ class Mirror(object):
         self.names = names.split()
         self._try_these = const.MIRRORS
 
-    def select_first_responding(self, timeout=const.TIMEOUT, silent=False):
+    def select_first_responding(self, timeout=const.TIMEOUT):
         for name in self.names:
             self._fill_attributes(name)
             if self._is_responding(timeout):
@@ -41,140 +41,131 @@ class Mirror(object):
             else:
                 self._try_these.remove(self.name)
         else:
-            to_screen(
-                '[warning] your preferred sites are not accessible. check others.', silent)
+            if self._try_these:  # if still site left to try
+                to_screen(" your preferred sites are not accessible. trying others...", style="yellow;italic")
             for name in self._try_these:
                 self._fill_attributes(name)
                 if self._is_responding(timeout):
                     break
             else:
-                to_screen(
-                    'Mirror: [error] any site is accessible. check internet connection.', silent)
-                sys.exit()
+                raise NoSiteIsAvailableError
+        return None
 
     def get_sub_details(self, page_text):
-        btn = BeautifulSoup(page_text, 'html.parser').select_one(
-            self.selectors['btn'])
+        soup = BeautifulSoup(page_text, 'html.parser')
+        btn = soup.select_one(self.selectors['btn'])
         if btn:
-            return {
-                'download_link': btn['href']
-            }
-        else:
-            return False
+            return {'download_link': btn['href']}
+        return False
 
-    def search(self, title, silent=False):
+    def search(self, title):
         path = self.query_path
         data = None
         if self.method == requests.get:
-            path += f"?query={title}&l=''"
+            path += f"?query={title}"
         elif self.method == requests.post:
-            data = {'query': title, 'l': '',
-                    'g-recaptcha-response': self.captcha}
-        to_screen(f'[Search] {self.base_url}{path}', silent)
+            data = {
+                'query': title,
+                'l': '',
+                'g-recaptcha-response': self.captcha
+            }
+        to_screen("  query: ", end='')
+        to_screen(f"{self.base_url}{path}", style="italic;info")
         page_text = self._get_page_text(path, data=data)
-        titles = BeautifulSoup(page_text, 'html.parser').select(
-            self.selectors['title'])
+        soup = BeautifulSoup(page_text, 'html.parser')
+        titles = soup.select(self.selectors['title'])
         aggregated = {title.attrs['href']: title.text for title in titles}
         return [{'path': p, 'title': t} for p, t in aggregated.items()]
 
     def get_subs(self, path):
         page_text = self._get_page_text(path)
-        subs = BeautifulSoup(page_text, 'html.parser').select(
-            self.selectors['link'])
+        soup = BeautifulSoup(page_text, 'html.parser')
+        subs = soup.select(self.selectors['link'])
         return {sub['href'] for sub in subs}
 
-    def _get_page_text(self, path, data=None, timeout=const.TIMEOUT, silent=False):
+    def _get_page_text(self, path, data=None, timeout=const.TIMEOUT):
         try:
-            page = self.method(self.base_url + path,
-                               data=data, timeout=timeout)
+            page = self.method(self.base_url + path, data=data, timeout=timeout)
             page.encoding = 'utf-8'
             return page.text
         except requests.exceptions.ConnectTimeout:
-            to_screen('[error] site is not reachable. (Timeout Error)', silent)
-            return ''
+            to_screen("[error] site is not reachable. (Timeout Error)", style="red")
         except requests.exceptions.ConnectionError:
-            to_screen('[error] Connection Error', silent)
-            return ''
+            to_screen("[error] Connection Error", style="red")
         except Exception as e:
-            to_screen('[error] unknown error', silent)
-            to_screen(e, silent)
-            return ''
+            to_screen("[error] unknown error", style="red")
+            to_screen(e, style="red")
+        return ''
 
-    def is_online(self):
-        return self._is_responding(silent=True)
-
-    def _is_responding(self, timeout=const.TIMEOUT, silent=False):
+    def _is_responding(self, timeout=const.TIMEOUT):
         try:
             if self.name not in const.MIRRORS:
                 raise InvalidSiteError
-            to_screen(f"[{self.name}] {self.base_url}/ is ",
-                      silent, flush=True, end='')
+            to_screen(f"[site] ", end='')
+            to_screen(f"{self.base_url}/", style="info", end='')
+            to_screen(" is ", end='')
             r = requests.head(self.base_url, timeout=timeout)
             if r.status_code == requests.codes['ok']:
-                to_screen('OK', silent)
+                to_screen('OK', style="bold;ok")
                 return True
             else:
-                to_screen(f'down? (status: {r.status_code})', silent)
-                return False
+                to_screen(f"down? (status: {r.status_code})", style="red")
         except requests.exceptions.ConnectTimeout:
-            to_screen('not reachable. (Timeout Error)', silent)
-            return False
+            to_screen("not reachable. (Timeout Error)", style="red")
         except requests.exceptions.ConnectionError:
-            to_screen('down? (Connection Error)', silent)
-            return False
+            to_screen("down? (Connection Error)", style="red")
         except InvalidSiteError:
-            to_screen(
-                f'[warning] Mirror: invalid site name: {self.name}', silent)
-            return False
+            to_screen(f"\r[site] invalid site name: {self.name}", style="warning")
         except Exception as e:
-            to_screen('down?', silent)
-            to_screen(e, silent)
-            return False
+            to_screen("down?", style="red")
+            to_screen(e, style="red")
+        return False
 
-    def mass_request(self, links):
+    def mass_request(self, paths):
         session = FuturesSession(max_workers=const.MAX_WORKERS)
-        n = len(links)
+        n = len(paths)
         no_links = []
         to_download = []
-        requests = [session.get(self.base_url + link) for link in links]
-        for i, path in enumerate(links):
-            to_screen(f'\r[new links] {i+1}/{n}',
-                      flush=True, end='')  # progress stats
+        requests = [session.get(self.base_url + path) for path in paths]
+        for i, path in enumerate(paths):
             page_text = requests[i].result().text
             link = self.get_sub_details(page_text)
             url = self.base_url + path
+            to_screen(f"\rgetting subtitles info... {i+1}/{n}", end='')  # progress
             if link:
-                to_download.append(
-                    {'path': path, 'url': url, 'dlink': link['download_link']})
+                item = {
+                    'path': path,
+                    'url': url,
+                    'dlink': link['download_link']
+                }
+                to_download.append(item)
             else:  # no link is found
                 no_links.append(url)
         else:
-            to_screen()  # go to new line for ending progress stats
+            to_screen("\rgetting subtitles info... ", end='')
+            to_screen(f"{cur.CFH}done!", style="ok")
+
         if no_links:
-            to_screen(
-                '\n[Warning] Getting download links for these urls was not successful:')
+            to_screen("\nno download link is found for these urls:", style="warning")
             for link in no_links:
-                to_screen(f'       {link}')
-            to_screen()
+                to_screen(f'       {link}', style="info")
         return to_download
 
-    def mass_download(self, to_download, silent=False):
+    def mass_download(self, to_download):
         session = FuturesSession(max_workers=const.MAX_WORKERS)
-        all_requests = [session.get(self.base_url + sub['dlink'])
-                        for sub in to_download]
+        all_requests = [session.get(self.base_url + sub['dlink']) for sub in to_download]
         n = len(to_download)
         to_extract = []
         for i, subtitle in enumerate(to_download):
             file = subtitle['path']
-            file.parent.mkdir(parents=True, exist_ok=True)
-            to_screen(f"\r[download] {i+1}/{n}", silent,
-                      flush=True, end='')  # progress stats
+            to_screen(f"\rdownloading... {i+1}/{n}", end='')  # progress
             with open(file, "w+b") as f:
                 file_content = all_requests[i].result().content
                 f.write(file_content)
             to_extract.append(subtitle)
         else:
-            to_screen()  # go to new line for ending progress stats
+            to_screen("\rdownloading... ", end='')
+            to_screen(f"{cur.CFH}done!", style="ok")
         return to_extract
 
     def login(self, timeout=const.TIMEOUT):
@@ -231,6 +222,7 @@ class Mirror(object):
                 "link": "tr td[class='a1'] a",
                 "btn": "a[id='downloadButton']"
             }
+        return None
 
 
 def get_soup(url):

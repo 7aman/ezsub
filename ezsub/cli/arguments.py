@@ -124,6 +124,7 @@ def get_parser():
     commands = parser.add_subparsers(
         title='commands',
         dest="command",
+        required=True,
         metavar='COMMAND')
 
     download = commands.add_parser(
@@ -259,7 +260,6 @@ def get_parser():
 class CliArgs(UserConf):
     def __init__(self, argv):
         super().__init__()
-        super().read()
         parser = get_parser()
         args = parser.parse_args(argv)
         self.command = args.command

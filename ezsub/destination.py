@@ -13,10 +13,14 @@ import rarfile
 
 from ezsub import const
 from ezsub.utils import to_screen
-from ezsub.errors import EmptyArchiveError, BadCompressedFileError
+from ezsub.errors import (
+    EmptyArchiveError,
+    BadCompressedFileError,
+    NothingToExtractError
+)
 
 logger = logging.getLogger(__name__)
-
+cur = const.Curser
 
 def get_extracor(file):
     if zipfile.is_zipfile(file):
@@ -36,14 +40,14 @@ class Destination(object):
     def extract(self, to_extract):
         if not to_extract:
             logger.warn("nothing to extract")
-            return None
+            raise NothingToExtractError
         empty_files = 0
         unrar_missing = False
         bad_files = list()
         destinations = set()
         n = len(to_extract)
         for i, item in enumerate(to_extract):
-            to_screen(f'\r[extract] {i+1}/{n}', flush=True, end='')
+            to_screen(f"\rextracting... {i+1}/{n}", end='')  # progress
             file = item['path']
             dest = self.make_destination(file)
             destinations.add(dest)
@@ -58,28 +62,33 @@ class Destination(object):
                 bad_files.append(item)
             except rarfile.RarCannotExec:
                 unrar_missing = True
-        to_screen()
+        else:
+            to_screen("\rextracting... ", end='')
+            to_screen(f"{cur.CFH}done!", style="ok")
+
         complain(empty_files, destinations, unrar_missing, bad_files)
         self.open()
+        return None
 
     def open(self):
         if not self.root.exists():
-            logger.warn("path '%s' not exists to open. Ignored.",
-                        self.root.resolve())
+            logger.warn("destination path '%s' not exists to open. Ignored.", self.root.resolve())
             return None
 
-        if self.open_after:
-            path = str(self.root.resolve())
-            apps = {
-                'Windows': 'explorer',
-                'Darwin': 'open',
-                'Others': 'xdg-open'
-            }
-            try:
-                app = apps[const.OS]
-            except:
-                app = apps['Others']
-            subprocess.Popen([app, path])
+        if not self.open_after:
+            return None
+
+        path = str(self.root.resolve())
+        if const.OS == 'Windows':
+            app = 'explorer',
+        elif const.OS == 'Darwin':
+            app = 'open',
+        else:
+            app = 'xdg-open'
+        to_screen("opening destination... ", end='')
+        subprocess.Popen([app, path])
+        to_screen(f"done!", style="ok")
+        return None
 
     def make_destination(self, filepath):
         dest = self.root
@@ -90,11 +99,12 @@ class Destination(object):
 
     def get_child(self, child, mk_parents=False):
         if str(child).startswith('/'):
-            child = f".{child}"
+            child = f".{child}"  # make it relative
         path = self.root.joinpath(child)
         if mk_parents:
             path.parent.mkdir(parents=True, exist_ok=True)
         return path.resolve()
+
 
 def _extract(file, extractor, dest):
     with extractor(file) as archive:
@@ -102,14 +112,15 @@ def _extract(file, extractor, dest):
             extract_members(dest, file, archive)
         else:
             raise EmptyArchiveError
+    return None
 
 
 def extract_members(dest, file, archive):
     for member in archive.infolist():
-        if hasattr(member, 'is_dir'):
+        if hasattr(member, 'is_dir'):  # zipfile
             if member.is_dir():
                 continue
-        elif hasattr(member, 'isdir'):
+        elif hasattr(member, 'isdir'):  # rarfile
             if member.isdir():
                 continue
         extracted_file = dest.joinpath(member.filename)
@@ -121,17 +132,25 @@ def extract_members(dest, file, archive):
         preferred_name = get_name(file, dest, member.filename)
         archive.extract(member.filename, str(dest))
         extracted_file.rename(preferred_name)
+    return None
+
+
+def get_language(file_path):
+    language = file_path.parent.name
+    if language == 'farsi_persian':
+        language = 'farsi'
+    return language
 
 
 def get_name(file, dest, item):
     filename = dest.joinpath(item)
-    lng = str(file).split('/')[-2]
+    language = get_language(file)
     name_options = {
         "1": filename,
-        "2": filename.with_suffix(f'.{lng}{filename.suffix}'),
-        "3": filename.parent.joinpath(f"{file.stem}.{lng}.{filename.name}")
+        "2": filename.with_suffix(f'.{language}{filename.suffix}'),
+        "3": filename.parent.joinpath(f"{file.stem}.{language}.{filename.name}")
     }
-    preferred = "2"
+    preferred = "2"  # TODO: add argument to get name pattern from user
     filename = name_options[preferred]
     if filename.exists():
         _rand = str(uuid.uuid4())[0:3]
@@ -142,25 +161,24 @@ def get_name(file, dest, item):
 
 
 def complain(empty=False, dest_list=None, no_unrar=None, bad_files=None):
-    to_screen()
     if empty:
-        to_screen(f'[Warning] empty archives: {empty}')
+        to_screen("found empty archives: ", end='')
+        to_screen(empty, style="warn")
 
     files_removed = remove_same(dest_list)
     if files_removed:
-        to_screen(f'[Warning] removed duplicate subtitles: {files_removed}')
+        to_screen("removed duplicate subtitles: ", end='')
+        to_screen(files_removed, style="warn")
 
     if no_unrar:
-        to_screen(
-            '[Warning] Some rar archives are found but unrar executable is missing.')
+        to_screen("Some rar archives are found but unrar executable is missing.", style="warn")
 
     if bad_files:
-        to_screen(
-            '[Warning] Some files are not zip nor rar.So these are considered as text files:')
+        to_screen("Some files are not zip nor rar.So these are considered as text files:", style="warn")
         for item in bad_files:
-            to_screen(f"       {item['path']}")
+            to_screen(f"       {item['path']}", style="info")
             if item['url']:
-                to_screen(f"           downloaded from: {item['url']}")
+                to_screen(f"           downloaded from: {item['url']}", style="info")
             shutil.copy2(str(item['path']), str(item['dest']))
 
 
@@ -169,6 +187,7 @@ def remove_same(paths):
         return 0
     to_remove = []
     for path in paths:
+        # TODO: skip for known media types
         files = [
             {'file': item, 'md5': md5(item.read_bytes()).digest()}
             for item in path.iterdir() if item.is_file()
@@ -187,14 +206,14 @@ def remove_same(paths):
     return len(to_remove)
 
 
+# TODO: use this function in case of illegal characters
 def test_path(folder, name):
     try:
         filepath = folder.joinpath(name)
         filepath.exists()
-        return name
     except OSError:
         # windows has some limitations on file names.
-        # '/' might be in namelist because dome compressed file have folders.
+        # '/' might be in namelist because some compressed file have folders.
         illegals = r'<>:"\|?*'
         name = "".join([c for c in name if c not in illegals]).rstrip()
-        return name
+    return name

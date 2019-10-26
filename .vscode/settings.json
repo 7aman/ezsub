@@ -7,8 +7,10 @@
     },
     "cSpell.words": [
         "abbrs",
-        "amaaan",
+        "7amaaan",
+        "aquaman",
         "calver",
+        "captcha",
         "distros",
         "dlink",
         "ezsub",
@@ -16,7 +18,6 @@
         "hastisub",
         "idsrv",
         "lngs",
-        "m",
         "mkdir",
         "nargs",
         "noprofile",
@@ -38,5 +39,9 @@
         "xsrf",
         "zaman",
         "zipfile"
+    ],
+    "python.formatting.provider": "autopep8",
+    "python.formatting.autopep8Args": [
+        "--max-line-length=120"
     ]
 }

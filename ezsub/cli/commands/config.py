@@ -3,11 +3,12 @@
 
 from ezsub.conf import UserConf, display_configs
 
+
 def config(req):
     configs = UserConf()
-    if req.subcommand == 'show':
+    if not req.subcommand or req.subcommand == 'show':
         display_configs(configs.path)
-
     elif req.subcommand == 'set':
         section, option = req.option.split('.')
         configs.set_option(section, option, req.value)
+    return None

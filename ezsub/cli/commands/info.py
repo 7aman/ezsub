@@ -5,13 +5,15 @@ import os
 
 from ezsub import const
 from ezsub.cache import Cache
+from ezsub.errors import CacheIsEmptyError
 from ezsub.utils import to_screen, get_size, get_title, machine_readable, count_children
+
 
 def info(req):
     cache = Cache()
     path = cache.subtitles
     if not os.listdir(path):
-        to_screen('\n' + "[Exit] Cache folder is empty." + '\n')
+        raise CacheIsEmptyError
     else:
         size = get_size(path, 'human')
         children = count_children(path, 0, generation=1)
@@ -21,6 +23,7 @@ def info(req):
         if req.verbosity >= 1:
             level_one(path, req.sort)
         to_screen()
+    return None
 
 
 LANGMAX = 15
@@ -32,13 +35,14 @@ SYMBOL = '#'
 
 
 def basic_info(path, size, children, total):
+    TAB = 2
     to_screen(f"\nezsub ver {const.__version__}")
     to_screen('\n[basic info]')
-    TAB = 2
-    to_screen(f'{" "*TAB}Path:       {path}')
-    to_screen(f'{" "*TAB}Size:       {size}')
-    to_screen(f'{" "*TAB}Titles:     {children}')
+    to_screen(f'{" "*TAB}Path     :  {path}')
+    to_screen(f'{" "*TAB}Size     :  {size}')
+    to_screen(f'{" "*TAB}Titles   :  {children}')
     to_screen(f'{" "*TAB}Subtitles:  {total}')
+    return None
 
 
 def level_one(path, sort_key):
@@ -64,7 +68,8 @@ def level_one(path, sort_key):
         to_screen((' '*SPACING).join(row_items))
     to_screen(subheader)
     to_screen(header)
-    to_screen(f'\nnotice: results are sorted by {SYMBOL} marked column\n')
+    to_screen(f'\nresults are sorted by {SYMBOL} marked column.\n', style="warn")
+    return None
 
 
 def get_sorted_items(path, sort_key):

@@ -2,5 +2,5 @@
 # -*- coding: utf-8 -*-
 
 python3 -m pip uninstall ezsub -y
-python3 setup.py develop --user
+python3 -m pip install --user --editable .
 exit 0

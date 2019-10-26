@@ -7,6 +7,7 @@ from ezsub.mirrors import Mirror
 from ezsub.utils import to_screen
 from ezsub.errors import LoginFailedError
 
+
 def login():
     """This function is for subscene only. Other mirrors do not have login page"""
     timeout = 3 * const.TIMEOUT
@@ -15,8 +16,11 @@ def login():
     to_screen("It takes some seconds. In success, it will display new token.")
     try:
         token = site.login(timeout)
-        to_screen(f"token: {token}")
+        to_screen(f"token:", end='')
+        to_screen(token, style='ok')
         configs = UserConf()
         configs.set_captcha(token)
+        to_screen("saved new token to user.conf", style='ok')
     except LoginFailedError:
-        to_screen("Login failed.")
+        to_screen("Login failed.", style='red')
+    return None

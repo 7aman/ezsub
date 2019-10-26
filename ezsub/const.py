@@ -80,6 +80,7 @@ TODAY = datetime.now()
 TODAY_STAMP = str(int(TODAY.timestamp()))
 TODAY_TIMEADD = TODAY.strftime('%Y%m%d-%H%M')
 
+
 def valid_boolean(value):
     if value in BOOLEAN_STATES.keys():
         return True
@@ -136,7 +137,7 @@ SETTINGS_SKELETON = {
         'auto_select': valid_boolean,
         'group': valid_boolean,
         'site': valid_site,
-        'languages': valid_lngs_string,
+        'lngs': valid_lngs_string,
         'destination': valid_destination
     },
     'Login': {
@@ -161,3 +162,59 @@ BAD = [
     "Bad request"
 ]
 MAX_WORKERS = 8
+
+
+# colors and text formats
+class Style:
+    END = '\033[0m'
+    BOLD = '\033[1m'
+    ITALIC = '\033[3m'
+    UNDERSCORE = '\033[4m'
+    URL = UNDERSCORE
+    REVERSE = '\033[7m'
+    TITLE = REVERSE
+    CROSSED =  '\033[9m'
+    OVERLINED = '\033[53m'
+    BLUE = '\033[34m'
+    RED = '\033[91m'
+    FAIL = RED
+    ERROR = RED
+    GREEN = '\033[92m'
+    SUCCESS = GREEN
+    OK = GREEN
+    YELLOW = '\033[93m'
+    WARNING = YELLOW
+    WARN = YELLOW
+    INFO = '\033[94m'
+
+    def __init__(self):
+        if OS == "Windows":
+            os.system('color')
+
+    def demo(self):
+        print("------start demo----")
+        variables = dir(self)
+        for a in variables:
+            try:
+                print(getattr(self, a) + a + self.END)
+                print()
+            except:
+                break
+        print("------stop demo----")
+
+    def render(self, styles, text):
+        ss = []
+        for s in styles.split(';'):
+            if hasattr(self, s.upper()):
+                ss.append(getattr(self, s.upper()))
+        ss.append(str(text))
+        ss.append(self.END)
+        return "".join(ss)
+
+class Curser:
+    LU = '\033[F'
+    SAVE = '\033[s'
+    RESTORE = '\033[u'
+    CFH = '\033[0K'
+    CTH= '\033[1K'
+    CL = '\033[2K'

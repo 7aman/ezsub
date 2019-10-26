@@ -18,6 +18,14 @@ class NothingToCleanError(Exception):
     pass
 
 
+class NothingToDownloadError(Exception):
+    pass
+
+
+class NothingToExtractError(Exception):
+    pass
+
+
 class EmptyArchiveError(Exception):
     pass
 
@@ -33,3 +41,10 @@ class JobDone(Exception):
 class WrongLineNumberError(Exception):
     pass
 
+
+class CacheIsEmptyError(Exception):
+    pass
+
+
+class NoSiteIsAvailableError(Exception):
+    pass

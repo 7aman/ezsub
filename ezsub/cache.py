@@ -6,8 +6,8 @@ import shutil
 import zipfile
 
 from ezsub import const
-from ezsub.utils import to_screen, select, get_title
-from ezsub.errors import NoResultError, NothingToCleanError
+from ezsub.errors import CacheIsEmptyError
+from ezsub.utils import get_title, to_screen
 
 
 class Cache(object):
@@ -16,7 +16,13 @@ class Cache(object):
         self.subtitles = root.joinpath('subtitles')
         self.subtitles.mkdir(parents=True, exist_ok=True)
 
-    def search(self, title, silent=False):
+    def search(self, title):
+        to_screen("[cache] ", end='')
+        to_screen(f"{self.subtitles}", style="info")
+        self.delete_empty_folders()
+        if self.is_empty(self.subtitles):
+            raise CacheIsEmptyError
+
         max_score = 1
         titles = list()
         for child in self.subtitles.iterdir():
@@ -43,22 +49,24 @@ class Cache(object):
             path.parent.mkdir(parents=True, exist_ok=True)
         return path.resolve()
 
-    def empty_zipfile(self, child):
-        path = self.root.joinpath('.', child)
-        with zipfile.ZipFile(path, 'w'):
-            pass
 
-    def delete_empty_children(self):
-        for title in self.subtitles.iterdir():
-            for langs in title.iterdir():
-                self.delete([langs], force=False)
-            self.delete([title], force=False)
-        to_screen()
+    def delete_empty_folders(self, root=None):
+        if not root:
+            root = self.subtitles
+        for child in root.iterdir():
+            if child.is_dir():
+                if self.is_empty(child):
+                    child.rmdir()
+                else:
+                    self.delete_empty_folders(child)
+            else:
+                return None
+        return None
 
     @staticmethod
     def _get_match_score(title, target):
-        title_words = set(str(title).lower().replace(
-            '+', ' ').replace('-', ' ').split())
+        # TODO: add partial word score
+        title_words = set(title.lower().replace('+', ' ').replace('-', ' ').split())
         score = 0
         for word in title_words:
             if str(target).__contains__(word):
@@ -66,38 +74,63 @@ class Cache(object):
         return score
 
     @staticmethod
-    def _filter_langs(paths, lngs):
-        final_paths = list()
-        for path in paths:
-            for language in lngs.values():
-                p = path.joinpath(language)
-                if p.exists():
-                    final_paths.append(p)
-                else:
-                    to_screen(
-                        ' '*4 + f"no result for: {language} in {path.resolve()}")
-        to_screen()
-        return final_paths
-    @staticmethod
-    def zero(folders):
-        cache = Cache()
-        action = 'emptying'
-        to_screen(f'\n[{action}]')
-        for folder in folders:
-            for child in folder.iterdir():
-                cache.empty_zipfile(child)
-                to_screen(f'emptied: {child.resolve()}')
-        return action
+    def empty_zipfile(path):
+        with zipfile.ZipFile(path, 'w'):
+            pass
+        return None
+
+    def zero(self, files):
+        for file in files:
+            self.empty_zipfile(file)
+        return 'emptying'
 
     @staticmethod
-    def delete(folders, force=False):
-        action = 'deleting'
-        for folder in folders:
-            if force:
-                shutil.rmtree(folder)
-                to_screen(f'deleted: {folder.resolve()}')
-            else:
-                if not os.listdir(folder):
-                    to_screen(f'deleted: [empty folder] {folder.resolve()}')
-                    folder.rmdir()
-        return action
+    def delete(files):
+        for file in files:
+            file.unlink()
+        return 'deleting'
+
+    @staticmethod
+    def is_empty(path):
+        if path.is_dir():
+            return not os.listdir(path)
+        return False
+
+
+def filter_langs(path, lngs):
+    final_paths = list()
+    for language in lngs.values():
+        p = path.joinpath(language)
+        if p.exists():
+            final_paths.append(p)
+    return final_paths
+
+
+def count_each_language(result, lngs):
+    splitted = {lng: 0 for lng in lngs.keys()}
+    mapper = {language: lng for lng, language in lngs.items()}
+    for file in result:
+        language = file['path'].parent.name
+        splitted[mapper[language]] += 1
+    return splitted
+
+
+def prune(paths, lngs):
+    pruned = []
+    for path in paths:
+        folders = filter_langs(path, lngs)
+        result = [
+            {'url': '', 'path': child}
+            for folder in folders
+            for child in folder.iterdir()
+        ]
+        splitted = count_each_language(result, lngs)
+        to_screen("\n    path: ", end='')
+        to_screen(f"{path.resolve()}", style="info")
+        to_screen("   found: ", end='')
+        to_screen(splitted, style="ok")
+        pruned = pruned[:] + result[:]
+    splitted = count_each_language(pruned, lngs)
+    to_screen("\ntotal: ", end='')
+    to_screen(splitted, style="ok")
+    return pruned

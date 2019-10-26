@@ -31,9 +31,7 @@ For more details see [How ezsub Works](./wiki/How-ezsub-Works.md).
 
 Dependencies:
 
-* python >= 3.7
-* request
-* BeautifulSoup
+* python3.7+
 * unrar [optional]
 
 Install latest published release using pip3

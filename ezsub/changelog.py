@@ -25,7 +25,7 @@ CHANGELOG = {
             ("add", "support user.conf")
         ],
         "changes-dev": [
-            ("add", "ReadMe.md")
+            ("add", "ReadMe.md"),
             ("add", "travis-ci"),
             ("add", "logging"),
             ("add", "dev scripts to build and publish"),

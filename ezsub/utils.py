@@ -2,17 +2,20 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import zipfile
 import subprocess
 
 from ezsub import const
 
 logger = logging.getLogger(__name__)
 
+s = const.Style()
 
-def to_screen(msg='', silent=False, **kwargs):
+
+def to_screen(msg='', style=None, silent=False, flush=True, **kwargs):
     if not silent:
-        print(str(msg), **kwargs)
+        if style:
+            msg = s.render(style, msg)
+        print(str(msg), flush=flush, **kwargs)
     return None
 
 
@@ -24,13 +27,6 @@ def full2abbr(language):
         raise ValueError(f"language '{language}' is not supported.")
 
 
-def get_lang(file_path):
-    language = file_path.parent.name
-    if language == 'farsi_persian':
-        language = 'farsi'
-    return language
-
-
 def abbr2full(lng):
     return const.LANGUAGE_PAIRS[lng]
 
@@ -39,7 +35,7 @@ def is_valid_lng(lng):
     return lng in const.SUPPORTED_LNGS
 
 
-def parse_lngs(lngs_string, silent=False):
+def parse_lngs(lngs_string):
     lngs = lngs_string.split()
     parsed = {}
     for lng in lngs:
@@ -47,8 +43,7 @@ def parse_lngs(lngs_string, silent=False):
             parsed[lng] = abbr2full(lng)
         else:
             logger.warn(f"'{lng}' is not a valid language abbr. Ignored.")
-            to_screen(
-                f"'{lng}' is not a valid language abbr. Ignored.", silent)
+            to_screen(f"'{lng}' is not a valid language abbr. Ignored.", style="warn")
     return parsed or {'en': 'english'}
 
 
@@ -69,56 +64,59 @@ def filter_valid_choice(text, maximum):
 def get_user_choice(results):
     mx = len(results)
     if mx == 1:
-        text = "  Press Enter to select only result"
+        text = "  select: Press Enter to select only result"
     else:
-        text = "  Select titles, comma separated numbers"
+        text = "  select: Enter title numbers, comma separated numbers"
 
     while True:
         try:
-            selected = input(f'{text} [1]: ') or '1'
+            to_screen(f"{text} [1]: ", end='')
+            selected = input() or '1'
             answer = filter_valid_choice(selected, mx)
             if answer:
                 return answer
             else:
                 raise IndexError
         except IndexError:
-            to_screen("    Oops! not valid. Try again.")
+            to_screen("    Oops! not valid. Try again.", style="warning")
+    return None
 
 
 def show_to_select(results):
-    to_screen('\n[Results]')
-    to_screen("  -----------------------------------------------")
+    to_screen("----------------------found----------------------")
     max_width = len(str(len(results)))
     for i, res in enumerate(results):
-        to_screen(f"    {str(i+1).rjust(max_width, ' ')} - {res['title']}")
-    to_screen("  -----------------------------------------------")
+        to_screen(f"  {str(i+1).rjust(max_width, ' ')} - {res['title']}")
+    to_screen("-------------------------------------------------")
+    return None
 
 
 def select(results, auto_select):
-    if not results:
-        return []
-    else:
+    selected = []
+    if results:
         show_to_select(results)
         if auto_select:
-            to_screen('    auto select: 1')
+            to_screen('  select: auto select first result')
             selected = [1, ]
         else:
             selected = get_user_choice(results)
-        return selected
+    return selected
 
 
 def windows_size(path):
-    size = subprocess.check_output([
+    command = [
         'powershell',
         '-noprofile',
         '-command',
         f"ls {path} -r | measure -s Length | select -ExpandProperty Sum"
-    ])
+    ]
+    size = subprocess.check_output(command)
     return int(size)
 
 
 def unix_size(path):
-    size = subprocess.check_output(['du', '-s', '-B 1', path])
+    command = ['du', '-s', '-B 1', path]
+    size = subprocess.check_output(command)
     return int(size.split()[0].decode('utf-8'))
 
 
@@ -144,6 +142,7 @@ def get_size(path, form='machine'):
         return human_readable(size)  # string
     elif form == 'machine':
         return size  # int
+    return None
 
 
 def get_title(path):
