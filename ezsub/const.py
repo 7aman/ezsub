@@ -7,8 +7,8 @@ import platform
 from pathlib import Path
 from datetime import datetime
 
-__version__ = '2019.10.26'
-SEMVER = '0.1.0'
+__version__ = '2019.10.28'
+SEMVER = '0.1.1'
 CALVER = __version__
 __author__ = 'Zaman'
 __contact__ = '7amaaan@gmail.com'

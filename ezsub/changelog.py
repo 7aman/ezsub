@@ -31,5 +31,12 @@ CHANGELOG = {
             ("add", "dev scripts to build and publish"),
             ("add", "spellcheck")
         ]
+    },
+    "2019.10.28": {
+        "semvar": "0.1.1",
+        "title": "Colorful",
+        "changes": [
+            ("add", "Color to screen outputs")
+        ]
     }
 }
