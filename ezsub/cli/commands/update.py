@@ -43,9 +43,9 @@ def install(remote, action='Upgrade'):
     answer = input(f'{action}? [y]/n: ') or 'y'
     if answer.lower() == 'y':
         to_screen(f"Installing {const.PROGRAMNAME} version {remote} silently...", end='')
-        subprocess.check_call([
+        subprocess.call([
             sys.executable,
-            '-m', 'pip', 'install', '-U', '--user', '-q',
+            '-m', 'pip', 'install', '--user', '-q',
             f'{const.PROGRAMNAME}=={remote}'], stdout=None)
         to_screen("Done!", style="ok")
     else:

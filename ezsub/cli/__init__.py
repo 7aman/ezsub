@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 import sys
 import logging
+import argparse
+
 from ezsub import const
 from ezsub.utils import to_screen
 from ezsub.cli.commands import (
@@ -15,13 +17,28 @@ from ezsub.errors import (
     NothingToExtractError,
     NoResultError,
     CacheIsEmptyError,
-    NoSiteIsAvailableError
+    NoSiteIsAvailableError,
+    GetContentFailed
 )
+
+def get_user_loglevel():
+    parser = argparse.ArgumentParser(add_help=False)
+    parser.add_argument("--loglevel")
+    args, _ = parser.parse_known_args(sys.argv[1:])
+    loglevel = args.loglevel
+    if loglevel:
+        numeric_level = getattr(logging, loglevel.upper(), None)
+        if isinstance(numeric_level, int):
+            to_screen(f"loglevel is set to {loglevel.upper()}", style="ok")
+            return loglevel.upper()
+        else:
+            to_screen(f"Invalid log level {loglevel}. Ignored.", style="warn")
+    return ''
 
 logging.basicConfig(
     filename=const.LOGFILE,
     filemode=const.LOGFILEMODE,
-    level=const.LOGLEVEL,
+    level=get_user_loglevel() or const.LOGLEVEL,
     format=const.LOGFORMAT
 )
 logger = logging.getLogger()
@@ -63,6 +80,8 @@ def main():
         to_screen("\nCache folder is empty.", style="warn;bold")
     except NoSiteIsAvailableError:
         to_screen("\nSites are not accessible. check internet connection.", style="red;bold")
+    except GetContentFailed:
+        to_screen("\nGetting page content is failed. try later.", style="red")
     except JobDone:
         pass
     except WrongLineNumberError:

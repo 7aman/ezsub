@@ -261,7 +261,8 @@ class CliArgs(UserConf):
     def __init__(self, argv):
         super().__init__()
         parser = get_parser()
-        args = parser.parse_args(argv)
+        logger.info("new call: 'ezsub %s'", " ".join(argv))
+        args, _ = parser.parse_known_args(argv)
         self.command = args.command
         # parser.print_usage()
         if args.__contains__('title'):

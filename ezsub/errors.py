@@ -48,3 +48,7 @@ class CacheIsEmptyError(Exception):
 
 class NoSiteIsAvailableError(Exception):
     pass
+
+
+class GetContentFailed(Exception):
+    pass

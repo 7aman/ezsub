@@ -27,14 +27,13 @@ script:
  - ezsub cfg set Defaults.open_after False
  - ezsub cfg set Defaults.site subscene hastisub subf2m xyz
  - ezsub cfg set Defaults.lngs en fa
- - ezsub dl -t friends first season
- - sudo apt remove unrar -y -qq > /dev/null
- - ezsub x -t friends first season
+ - ezsub dl -t wilderpeople
+ - ezsub x -t wilderpeople
  - ezsub history run 2
  - ezsub info
  - ezsub backup -O
- - ezsub clean -t friends first season -l en --zero
- - ezsub clean -t friends first season -a
+ - ezsub clean -t wilderpeople -l en --zero
+ - ezsub clean -t wilderpeople -a
  - ezsub cfg show
  - ezsub h show
 

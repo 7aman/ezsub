@@ -2,13 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import os
-import logging
 import platform
 from pathlib import Path
 from datetime import datetime
 
-__version__ = '2019.10.28'
-SEMVER = '0.1.1'
+__version__ = '2019.11.01'
+SEMVER = '0.1.2'
 CALVER = __version__
 __author__ = 'Zaman'
 __contact__ = '7amaaan@gmail.com'
@@ -38,7 +37,7 @@ HISTORY = ROOT.joinpath('history.txt')
 CONFIGFILE = ROOT.joinpath('user.conf')
 LOGFILE = ROOT.joinpath('ezsub.log')
 LOGLEVEL = 'INFO'
-LOGFILEMODE = 'w'
+LOGFILEMODE = 'a'
 LOGFORMAT = "[%(asctime)s][%(levelname)s]{%(name)s:%(lineno)d}# %(message)s"
 DESTINATION = get_destination()
 MIRRORS = ['subscene', 'hastisub', 'subf2m', 'xyz']
@@ -151,6 +150,7 @@ SETTINGS_SKELETON = {
 
 # requests timeout
 TIMEOUT = 5
+RETRY = 3
 SIGNS = [
     "Temporary unavailable",
     "Request Timeout",
@@ -173,7 +173,7 @@ class Style:
     URL = UNDERSCORE
     REVERSE = '\033[7m'
     TITLE = REVERSE
-    CROSSED =  '\033[9m'
+    CROSSED = '\033[9m'
     OVERLINED = '\033[53m'
     BLUE = '\033[34m'
     RED = '\033[91m'
@@ -211,10 +211,11 @@ class Style:
         ss.append(self.END)
         return "".join(ss)
 
+
 class Curser:
     LU = '\033[F'
     SAVE = '\033[s'
     RESTORE = '\033[u'
     CFH = '\033[0K'
-    CTH= '\033[1K'
+    CTH = '\033[1K'
     CL = '\033[2K'

@@ -64,9 +64,9 @@ def filter_valid_choice(text, maximum):
 def get_user_choice(results):
     mx = len(results)
     if mx == 1:
-        text = "  select: Press Enter to select only result"
+        text = "  Press Enter to select only result"
     else:
-        text = "  select: Enter title numbers, comma separated numbers"
+        text = "  Enter title numbers, comma separated numbers"
 
     while True:
         try:
@@ -83,11 +83,11 @@ def get_user_choice(results):
 
 
 def show_to_select(results):
-    to_screen("----------------------found----------------------")
+    to_screen("--------------------------------------------")
     max_width = len(str(len(results)))
     for i, res in enumerate(results):
         to_screen(f"  {str(i+1).rjust(max_width, ' ')} - {res['title']}")
-    to_screen("-------------------------------------------------")
+    to_screen("---------------------------------------------")
     return None
 
 

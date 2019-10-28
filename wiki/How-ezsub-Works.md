@@ -1,11 +1,11 @@
-# What can `ezsub` do and how does it
+# How ezsub works
 
 ## It is all about laziness
 
-If you watch too much pirated foreign TV series and Movies, you may heard of something called subtitle. So many volunteered translators make subtitles and upload them on services like [subscene](https://subscene.com).  
+So many volunteered translators make subtitles and upload them on websites like [subscene](https://subscene.com).  
 But downloading subtitles for each episode of a TV series or many versions of a movie is a long procedure. You have to:
 
-```pseudo
+```
 do {
 
     visit main page of the site
@@ -13,9 +13,9 @@ do {
     select a match
     go to matched page
     look over maybe 100 or 1000 subtitles on this page, even they are not in your desired language
-    choose which is matches your language, episode, encoder, uploader
+    choose which subs match your language, episode, encoder, uploader
     open them in new tabs
-    click on download buttons and save them
+    click the download buttons and save them
     extract them
     move extracted subtitles to the folder next to your media file
 
@@ -35,13 +35,13 @@ Trust me! I done it hundreds of times and it is exhausting, boring and annoying 
 - filters out previously downloaded subtitles which stored in a cache folder
 - downloads new subtitles and stores them in the cache folder
 - extracts them to a destination you ordered and labels extracted subtitles with language they have
-- deletes duplicated subtitles (with exactly same content and regardless of their names)
+- deletes duplicated subtitles (with exactly same content regardless of their names)
 - opens the destination folder after it is done
 
-Considering size of subtitles that are very small, `ezsub` will download all new subtitles in every call against a title. For example all Persian and English subtitles uploaded for seventh season of game of thrones is about only 24.79 MB (559 zip files must be downloaded)
+Considering size of subtitles that are very small, `ezsub` will download all new subtitles of given languages in every call against a title. For example all Persian and English subtitles uploaded for seventh season of game of thrones is about only 24.79 MB (559 zip files)
 
-Because `ezsub` caches downloaded subtitles, you can extract them again later with `ezsub` itself. It has a sub-command to do this. Procedure to extract from cache is something like download process.
+Because `ezsub` caches downloaded subtitles, you can extract them again with `ezsub` itself. It has a sub-command to do this. Procedure to extract from cache is something like download process.
 
-`ezsub` creates a config file and sets some default behavior and options to use less arguments in each call. Options such as which mirror and language you prefer. Behavior such as your default destination to extract files and if you want to open destination folder after it is done.
+`ezsub` creates a config file and sets some default behavior and options to use less arguments in each call. Options such as which mirror, language you prefer and your default destination. Behavior such as if you want to open destination folder after it is done.
 
 [Back to Home](./ReadMe.md)

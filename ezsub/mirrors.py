@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import logging
+import traceback
 from datetime import datetime
 
 import requests
@@ -11,9 +13,11 @@ from requests_futures.sessions import FuturesSession
 from ezsub import const
 from ezsub.conf import UserConf
 from ezsub.utils import to_screen
-from ezsub.errors import InvalidSiteError, LoginFailedError, NoSiteIsAvailableError
+from ezsub.errors import LoginFailedError, NoSiteIsAvailableError, GetContentFailed
 
 cur = const.Curser
+logger = logging.getLogger(__name__)
+
 
 def available(pagetext):
     for sign in const.SIGNS:
@@ -31,22 +35,22 @@ class Mirror(object):
     def __init__(self, names=const.SITE):
         '''names is a space separated site names in preferred order.'''
         self.names = names.split()
-        self._try_these = const.MIRRORS
 
-    def select_first_responding(self, timeout=const.TIMEOUT):
+    def select_first_responding(self, timeout=const.TIMEOUT, ignore=''):
+        not_checked = const.MIRRORS[:]
         for name in self.names:
+            if name == ignore:
+                not_checked.remove(name)
+                continue
             self._fill_attributes(name)
-            if self._is_responding(timeout):
-                break
-            else:
-                self._try_these.remove(self.name)
+            if self._is_responding(timeout): break
+            else: not_checked.remove(self.name)
         else:
-            if self._try_these:  # if still site left to try
-                to_screen(" your preferred sites are not accessible. trying others...", style="yellow;italic")
-            for name in self._try_these:
+            # if still there are sites left to try
+            if not_checked:  to_screen("trying other mirrors...", style="yellow;italic")
+            for name in not_checked:
                 self._fill_attributes(name)
-                if self._is_responding(timeout):
-                    break
+                if self._is_responding(timeout): break
             else:
                 raise NoSiteIsAvailableError
         return None
@@ -72,6 +76,13 @@ class Mirror(object):
         to_screen("  query: ", end='')
         to_screen(f"{self.base_url}{path}", style="italic;info")
         page_text = self._get_page_text(path, data=data)
+        retry = const.RETRY
+        while (not page_text) and retry:
+            to_screen("current mirror is not responding. trying other mirrors...", style="warn")
+            self.select_first_responding(ignore=self.name)
+            self._get_page_text(path, data)
+            retry = retry - 1
+        if not page_text: raise GetContentFailed
         soup = BeautifulSoup(page_text, 'html.parser')
         titles = soup.select(self.selectors['title'])
         aggregated = {title.attrs['href']: title.text for title in titles}
@@ -83,25 +94,24 @@ class Mirror(object):
         subs = soup.select(self.selectors['link'])
         return {sub['href'] for sub in subs}
 
-    def _get_page_text(self, path, data=None, timeout=const.TIMEOUT):
-        try:
-            page = self.method(self.base_url + path, data=data, timeout=timeout)
-            page.encoding = 'utf-8'
-            return page.text
-        except requests.exceptions.ConnectTimeout:
-            to_screen("[error] site is not reachable. (Timeout Error)", style="red")
-        except requests.exceptions.ConnectionError:
-            to_screen("[error] Connection Error", style="red")
-        except Exception as e:
-            to_screen("[error] unknown error", style="red")
-            to_screen(e, style="red")
-        return ''
+    def _get_page_text(self, path, data=None, timeout=const.TIMEOUT, retry=const.RETRY):
+        while retry:
+            try:
+                page = self.method(self.base_url + path, data=data, timeout=timeout)
+                page.encoding = 'utf-8'
+                return page.text
+            except Exception as e:
+                to_screen("getting page content failed. for more info see log.", style="warn")
+                logger.warn(e)
+                logger.debug(traceback.format_exc())
+            retry = retry - 1
+            timeout = 2 * timeout  # double timeout
+            if retry: to_screen("retry with timeout doubled...", style="warn")
+        
 
     def _is_responding(self, timeout=const.TIMEOUT):
         try:
-            if self.name not in const.MIRRORS:
-                raise InvalidSiteError
-            to_screen(f"[site] ", end='')
+            to_screen(f"checking '{self.name}': ", end='')
             to_screen(f"{self.base_url}/", style="info", end='')
             to_screen(" is ", end='')
             r = requests.head(self.base_url, timeout=timeout)
@@ -109,16 +119,11 @@ class Mirror(object):
                 to_screen('OK', style="bold;ok")
                 return True
             else:
-                to_screen(f"down? (status: {r.status_code})", style="red")
-        except requests.exceptions.ConnectTimeout:
-            to_screen("not reachable. (Timeout Error)", style="red")
-        except requests.exceptions.ConnectionError:
-            to_screen("down? (Connection Error)", style="red")
-        except InvalidSiteError:
-            to_screen(f"\r[site] invalid site name: {self.name}", style="warning")
+                to_screen(f"not responding (status: {r.status_code})", style="warn")
         except Exception as e:
-            to_screen("down?", style="red")
-            to_screen(e, style="red")
+            to_screen("failed with error. see log. trying next mirror...", style="warn")
+            logger.warn(e)
+            logger.debug(traceback.format_exc())
         return False
 
     def mass_request(self, paths):
@@ -177,6 +182,8 @@ class Mirror(object):
             raise LoginFailedError
 
     def _fill_attributes(self, name):
+        if name not in const.MIRRORS:
+            to_screen(f"\r[site] ignoring invalid site '{name}' and using '{const.SITE}' instead.", style="warning")
         self.name = name
         if self.name == 'subscene':
             self.base_url = "https://subscene.com"

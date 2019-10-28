@@ -48,6 +48,7 @@ For installing latest in progress version from github (not recommended) use this
 
 ```shell
 python3 -m pip install --user --upgrade https://github.com/7aman/ezsub/archive/master.zip
+
 # windows
 python -m pip install --user --upgrade https://github.com/7aman/ezsub/archive/master.zip
 ```
@@ -69,17 +70,22 @@ Examples:
 ```shell
 # if search keywords are distinctive enough, use auto select (-a)
 ezsub dl -t riverdale third season -l fa -a
+
 # determine site. If site is not responding, ezsub will choose first responding site automatically.
 ezsub dl -t game of thrones -s subscene
+
 # movies, tv series, video musics are not different.
 ezsub dl -t how to train your dragon
+
 # extract here and relative to here (both windows and unix)
 ezsub dl -t aquaman -d .
 ezsub dl -t aquaman -d ./children/to/here
 ezsub dl -t aquaman -d ../sibling/to/here
+
 # absolute and relative path (unix)
 ezsub dl -t aquaman -d /absolute/path/to/a/destination
 ezsub dl -t aquaman -d ~/relative/path/to/home/directory
+
 # absolute path (windows)
 ezsub dl -t aquaman -d 'D:\Movies\Aquaman\'
 ```
@@ -144,8 +150,8 @@ ezsub update
 ```
 
 Check if there is a new version of ezsub available. If user confirms, new version will be installed.  
-Also if last check was before 7 days ago, a next call it warns user to check for update.
+Also if last check was before 7 days ago, at next call it warns user to check for update.
 
 ### Backup
 
-Create a zip archive from cache and config folder. It accepts `-d` option for destination and `-o|-O` for opening destination folder after backup is completed.
+Create a zip archive from cache folder. It accepts `-d` option for destination and `-o|-O` for opening destination folder after backup is completed.

@@ -6,8 +6,9 @@
         "**/build": true
     },
     "cSpell.words": [
-        "abbrs",
         "7amaaan",
+        "abbrs",
+        "amaaan",
         "aquaman",
         "calver",
         "captcha",
@@ -15,9 +16,11 @@
         "dlink",
         "ezsub",
         "gmail",
+        "godev",
         "hastisub",
         "idsrv",
         "lngs",
+        "loglevel",
         "mkdir",
         "nargs",
         "noprofile",
@@ -36,6 +39,7 @@
         "subscene",
         "tbody",
         "virtualenv",
+        "wilderpeople",
         "xsrf",
         "zaman",
         "zipfile"
