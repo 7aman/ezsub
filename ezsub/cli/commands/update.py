@@ -25,6 +25,7 @@ def update(just_remind=False):
         to_screen(f'{remote}', style="ok")
         if parse_version(remote) > parse_version(current):
             to_screen(f'There is a new version.', style="warn")
+            whats_new()
             install(remote, action='Upgrade')
         elif parse_version(remote) < parse_version(current):
             to_screen(f'You are ahead of the latest version.', style="warn")
@@ -68,6 +69,9 @@ def remote_version():
 
 def remind_to_update():
     configs = UserConf()
+    if configs.reminder == '0':
+        # zero means never
+        return None
     days_past = (const.TODAY - configs.get_last_check()).days
     if days_past > int(configs.reminder):
         to_screen("Update Reminder:", style="bold;italic;warn")
@@ -78,3 +82,25 @@ def remind_to_update():
         to_screen(f"{const.PROGRAMNAME} update", style="ok")
         to_screen()
     return None
+
+
+def get_changelog():
+    TIMEOUT = const.TIMEOUT
+    url = "https://raw.githubusercontent.com/7aman/ezsub/master/CHANGELOG"
+    try:
+        return requests.get(url, timeout=TIMEOUT).text
+    except requests.exceptions.ConnectTimeout:
+        return False
+    except requests.exceptions.ConnectionError:
+        return False
+    return False
+
+
+def whats_new():
+    changelog = get_changelog().split('\n')
+    curver = f"v{const.__version__}"  # vYYYY.MM.DD
+    to_screen("what's new? ")
+    for line in changelog:
+        if line == curver:
+            break
+        to_screen(line, style="ok")

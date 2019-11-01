@@ -1,39 +1,27 @@
-v2019.11.1
+-------------------
+v2019.11.06
 
-Core:
++ update: set remind_every to 0 in user.conf to disable update reminder
++ update: show what's new if an update is available
++ download: new switch '-T' for exact title 
+
+-------------------
+v2019.11.01
+
 + user can set log level from arguments (--loglevel LOGLEVEL)
 + fix update issue
 
-Dev:
-- remove changelog.py
-+ retry 3 times if site is temporary not responding. if fails, try other mirrors.
-+ fix script godev.sh issue with uninstalling ezsub
-+ fix some typo and instructions in readme
-+ minor refactoring mirrors.py
-
 -------------------
-
 v2019.10.28
 
-Core:
 + add color to screen outputs
 
 -------------------
-
 v2019.10.26
 
-Core:
 + commands: download, unzip, clean, backup, update, login, info, history
 
-Dev:
-+ travis
-+ logging
-+ scripts
-+ spellcheck
-
 -------------------
-
 v2019.10.17
 
-Core:
 + initial empty release

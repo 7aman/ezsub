@@ -78,6 +78,7 @@ def fresh_configs():
     configs.add_section('Update')
     configs['Update'] = {
         ";; Do not change last_check manually else you know what are you doing.": None,
+        ";; remind_every [unit: day] accept non-negative integer values. 0 means never": None,
         "remind_every": const.PERIOD,
         "last_check": const.TODAY_STAMP
     }

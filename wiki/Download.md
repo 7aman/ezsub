@@ -1,7 +1,7 @@
 # Download
 
 ```shell
-ezsub dl -t TITLE -l LNG1 [LANG2 ...] -d DESTINATION -s SITE1 [SITE2 ...] -a|-A -o|-O -g|G -S
+ezsub dl -t|-T TITLE | -l LNG1 [LANG2 ...] -d DESTINATION -s SITE1 [SITE2 ...] -a|-A -o|-O -g|G -S
 ```
 
 ## Workflow
@@ -23,10 +23,13 @@ ezsub dl -t TITLE -l LNG1 [LANG2 ...] -d DESTINATION -s SITE1 [SITE2 ...] -a|-A 
 ## Switches
 
 - `-t` is title to search. It is required.  
+Also if user knows exact title used in url page, user could give this title by `-T` switch. For example subscene page for first season of *"the end of the f***ing world"* is `https://subscene.com/subtitles/the-end-of-the-fing-world`, so exact title is `the-end-of-the-fing-world`.  
+Only one of `-t` and `-T` is allowed.  
 Examples:
   - `-t riverdale`
   - `-t riverdale first season`
   - `-t godfather`
+  - `-T the-end-of-the-fing-world`
 
 - `-l` is/are "space separated" language(s) that user interested in. It uses abbr.  
 Default: `en`  

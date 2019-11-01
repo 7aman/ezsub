@@ -30,6 +30,14 @@ title.add_argument(
     nargs='+',
     help='Title to search')
 
+exact = argparse.ArgumentParser(add_help=False)
+exact.add_argument(
+    '-T',
+    '--exact',
+    dest='exact',
+    metavar='EXACT-TITLE',
+    help='exact title used in page url, i.e. https://subcene.com/subtitles/EXACT-TITLE')
+
 lngs = argparse.ArgumentParser(add_help=False)
 lngs.add_argument(
     '-l',
@@ -129,7 +137,7 @@ def get_parser():
 
     download = commands.add_parser(
         'download',
-        parents=[title, destination, _open, _ask, _group, site, lngs],
+        parents=[title, exact, destination, _open, _ask, _group, site, lngs],
         aliases=['d', 'dl'],
         help='Download subtitles for a given title.')
 
@@ -178,8 +186,6 @@ def get_parser():
         'history',
         aliases=['h'],
         help='Show or execute previous commands.')
-
-
 
     config_commands = config.add_subparsers(
         dest="subcommand",
@@ -233,7 +239,6 @@ def get_parser():
         action='store_true',
         help="do not delete, just empty the files.")
 
-
     history_commands = history.add_subparsers(
         dest="subcommand",
         title="subcommand",
@@ -264,12 +269,21 @@ class CliArgs(UserConf):
         logger.info("new call: 'ezsub %s'", " ".join(argv))
         args, _ = parser.parse_known_args(argv)
         self.command = args.command
-        # parser.print_usage()
         if args.__contains__('title'):
             if args.title:
-                self.title = " ".join(args.title)
-            else:
-                self.title = ''
+                if args.exact:
+                    parser.error("one of -t and -T is allowed.")
+                else:
+                    self.title = " ".join(args.title)
+                    self.exact = ''  # add a url attribute to check later
+
+        if args.__contains__('exact'):
+            if args.exact:
+                if args.title:
+                    parser.error("one of -t and -T is allowed.")
+                else:
+                    self.exact = args.exact
+                    self.title = ''  # add a title attribute to check later
 
         if args.__contains__('lngs'):
             if args.lngs:

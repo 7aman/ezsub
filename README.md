@@ -10,7 +10,7 @@
 such as [subf2m.co](https://subf2m.co/).  
 For more details see [How ezsub Works](./wiki/How-ezsub-Works.md).
 
----
+<hr/>
 
 ## Table of Contents
 
@@ -24,8 +24,9 @@ For more details see [How ezsub Works](./wiki/How-ezsub-Works.md).
   * [Clean: `ezsub clean`](#Clean)
   * [Update: `ezsub update`](#Update)
   * [Backup: `ezsub backup`](#Backup)
+* [Report Errors](#report-errors)
 
----
+<hr/>
 
 ## Install
 
@@ -55,6 +56,8 @@ python -m pip install --user --upgrade https://github.com/7aman/ezsub/archive/ma
 
 See [here](./wiki/Install.md) for more details.
 
+<hr/>
+
 ## How to Use
 
 ### Download
@@ -76,6 +79,12 @@ ezsub dl -t game of thrones -s subscene
 
 # movies, tv series, video musics are not different.
 ezsub dl -t how to train your dragon
+
+# if you know exact title used in url use this -T
+# for example subscene page for first season of "the end of the f***ing world" is:
+# https://subscene.com/subtitles/the-end-of-the-fing-world
+#so:
+ezsub dl -T the-end-of-the-fing-world
 
 # extract here and relative to here (both windows and unix)
 ezsub dl -t aquaman -d .
@@ -155,3 +164,10 @@ Also if last check was before 7 days ago, at next call it warns user to check fo
 ### Backup
 
 Create a zip archive from cache folder. It accepts `-d` option for destination and `-o|-O` for opening destination folder after backup is completed.
+
+<hr/>
+
+## Report Errors
+
+`ezsub` logs some messages that could be found in `ROOT/ezsub.log` file.  
+If you getting error, you can run each `ezsub` command with `--loglevel=Debug` switch. Get `ezsub.log` content and create an issue [here](https://github.com/7aman/ezsub/issues) to report.

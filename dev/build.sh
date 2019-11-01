@@ -8,3 +8,4 @@ rm -rd build dist 2> /dev/null
 python3 setup.py sdist bdist_wheel
 echo "----- build: done"
 echo ""
+exit 0

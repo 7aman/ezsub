@@ -1,0 +1,34 @@
+-------------------
+v2019.11.06
+
++ set rules for versioning and changelog format
++ add CHANGELOG-DEV and RULES
++ rename dev scripts
++ mirrors database in MDB
+
+-------------------
+v2019.11.01
+
+- remove changelog.py
++ retry 3 times if site is temporary not responding. if fails, try other mirrors.
++ fix script godev.sh issue with uninstalling ezsub
++ fix some typo and instructions in readme
++ minor refactoring mirrors.py
+
+-------------------
+v2019.10.28
+
+- Nothing
+
+-------------------
+v2019.10.26
+
++ travis
++ logging
++ scripts
++ spellcheck
+
+-------------------
+v2019.10.17
+
+- Empty project

@@ -5,6 +5,7 @@ import sys
 import logging
 import traceback
 from datetime import datetime
+from urllib.parse import urlparse
 
 import requests
 from bs4 import BeautifulSoup
@@ -13,11 +14,69 @@ from requests_futures.sessions import FuturesSession
 from ezsub import const
 from ezsub.conf import UserConf
 from ezsub.utils import to_screen
-from ezsub.errors import LoginFailedError, NoSiteIsAvailableError, GetContentFailed
+from ezsub.errors import (
+    LoginFailedError,
+    NoSiteIsAvailableError,
+    GetContentFailed,
+    NoResultError
+)
 
 cur = const.Curser
 logger = logging.getLogger(__name__)
 
+MDB = {
+    'subscene': {
+        "base_url": "https://subscene.com",
+        "query_path": "/subtitles/searchbytitle",
+        "method": requests.post,
+        "login_path": '/account/login',
+        "captcha": UserConf().get_captcha(),
+        "selectors": {
+            "title": "li div[class='title'] a",
+            "link": "tr td[class='a1'] a",
+            "btn": "a[id='downloadButton']"
+        }
+    },
+    'hastisub': {
+        "base_url": "http://hastisub.top",
+        "query_path": "/subtitles/searchbytitle",
+        "method": requests.get,
+        "login_path": '',
+        "captcha": '',
+        "selectors": {
+            "title": "li div[class='title'] a",
+            "link": "tr td[class='a1'] a",
+            "btn": "#downloadButton",
+            "release": "li.release div",
+            "author": "li.author a",
+            "date": "#details ul li"
+        }
+    },
+    'subf2m': {
+        "base_url": "https://subf2m.co",
+        "query_path": "/subtitles/searchbytitle",
+        "method": requests.get,
+        "login_path": '',
+        "captcha": '',
+        "selectors": {
+            "title": "li div[class='title'] a",
+            "link": "a[class='download icon-download']",
+            "btn": "a[id='downloadButton']"
+        }
+    },
+    'xyz': {
+        "base_url": "https://subscene.xyz",
+        "query_path": "/subtitles/searchbytitle",
+        "method": requests.get,
+        "login_path": '',
+        "captcha": '',
+        "selectors": {
+            "title": "li div[class='title'] a",
+            "link": "tr td[class='a1'] a",
+            "btn": "a[id='downloadButton']"
+        }
+    }
+}
 
 def available(pagetext):
     for sign in const.SIGNS:
@@ -43,14 +102,18 @@ class Mirror(object):
                 not_checked.remove(name)
                 continue
             self._fill_attributes(name)
-            if self._is_responding(timeout): break
-            else: not_checked.remove(self.name)
+            if self._is_responding(timeout):
+                break
+            else:
+                not_checked.remove(self.name)
         else:
             # if still there are sites left to try
-            if not_checked:  to_screen("trying other mirrors...", style="yellow;italic")
+            if not_checked:
+                to_screen("trying other mirrors...", style="yellow;italic")
             for name in not_checked:
                 self._fill_attributes(name)
-                if self._is_responding(timeout): break
+                if self._is_responding(timeout):
+                    break
             else:
                 raise NoSiteIsAvailableError
         return None
@@ -82,11 +145,18 @@ class Mirror(object):
             self.select_first_responding(ignore=self.name)
             self._get_page_text(path, data)
             retry = retry - 1
-        if not page_text: raise GetContentFailed
+        if not page_text:
+            raise GetContentFailed
         soup = BeautifulSoup(page_text, 'html.parser')
         titles = soup.select(self.selectors['title'])
         aggregated = {title.attrs['href']: title.text for title in titles}
         return [{'path': p, 'title': t} for p, t in aggregated.items()]
+
+    def exact_search(self, title):
+        return (
+            [{'path': f"/subtitles/{title}", 'title': ''}], # results
+            [1,]   # selected
+        )
 
     def get_subs(self, path):
         page_text = self._get_page_text(path)
@@ -106,8 +176,9 @@ class Mirror(object):
                 logger.debug(traceback.format_exc())
             retry = retry - 1
             timeout = 2 * timeout  # double timeout
-            if retry: to_screen("retry with timeout doubled...", style="warn")
-        
+            if retry:
+                to_screen("retry with timeout doubled...", style="warn")
+        raise GetContentFailed
 
     def _is_responding(self, timeout=const.TIMEOUT):
         try:
@@ -184,52 +255,14 @@ class Mirror(object):
     def _fill_attributes(self, name):
         if name not in const.MIRRORS:
             to_screen(f"\r[site] ignoring invalid site '{name}' and using '{const.SITE}' instead.", style="warning")
+            name = const.SITE
         self.name = name
-        if self.name == 'subscene':
-            self.base_url = "https://subscene.com"
-            self.query_path = "/subtitles/searchbytitle"
-            self.method = requests.post
-            self.login_path = '/account/login'
-            self.captcha = UserConf().get_captcha()
-            self.selectors = {
-                "title": "li div[class='title'] a",
-                "link": "tr td[class='a1'] a",
-                "btn": "a[id='downloadButton']"
-            }
-        elif self.name == 'hastisub':
-            self.base_url = "http://hastisub.top"
-            self.query_path = "/subtitles/searchbytitle"
-            self.method = requests.get
-            self.login_path = ''
-            self.selectors = {
-                "title": "li div[class='title'] a",
-                "link": "tr td[class='a1'] a",
-                "btn": "#downloadButton",
-                "release": "li.release div",
-                "author": "li.author a",
-                "date": "#details ul li"
-            }
-        elif self.name == 'subf2m':
-            self.base_url = "https://subf2m.co"
-            self.query_path = "/subtitles/searchbytitle"
-            self.method = requests.get
-            self.login_path = ''
-            self.selectors = {
-                "title": "li div[class='title'] a",
-                "link": "a[class='download icon-download']",
-                "btn": "a[id='downloadButton']"
-            }
-        elif self.name == 'xyz':
-            self.base_url = "https://subscene.xyz"
-            self.query_path = "/subtitles/searchbytitle"
-            self.method = requests.get
-            self.login_path = ''
-            self.selectors = {
-                "title": "li div[class='title'] a",
-                "link": "tr td[class='a1'] a",
-                "btn": "a[id='downloadButton']"
-            }
-        return None
+        self.base_url = MDB[name]['base_url']
+        self.query_path = MDB[name]['query_path']
+        self.method = MDB[name]['method']
+        self.login_path = MDB[name]['login_path']
+        self.captcha = MDB[name]['captcha']
+        self.selectors = MDB[name]['selectors']
 
 
 def get_soup(url):
@@ -264,3 +297,5 @@ def get_available_languages(soup):
     '''get soup of a title page and returns all available languages for that title'''
     language_rows = soup.select('tbody tr td[colspan="5"]')
     return [row['id'] for row in language_rows if row.has_attr('id')]
+
+

@@ -1,0 +1,24 @@
+Publish checklist
+- change version and semver
+- change changelog and changelog-dev
+- change readme and wiki if it is required
+- build
+- test upload
+- merge to master
+- tag
+- push, push tags
+- edit release info in github
+
+
+Rules:
+- version format: 'YYYY.MM.DD' with leading zeroes
+- changelog format:
+    ------------------
+    vYYYY.MM.DD
+
+    changes
+
+    ------------------
+    vYYYY.MM.DD
+
+    changes 

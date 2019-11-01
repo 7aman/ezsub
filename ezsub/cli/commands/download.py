@@ -19,12 +19,17 @@ def download(req):
     cache = Cache()
     destination = Destination(req.destination, req.group, req.open_after)
 
-    results = site.search(req.title)
-    selected = select(results, req.auto_select)
+    if req.exact:
+        results, selected = site.exact_search(req.exact)
+    else: # use title
+        results = site.search(req.title)
+        selected = select(results, req.auto_select)
+
     if not selected:
         raise NoResultError
-
+    
     paths = [results[s-1]['path'] for s in selected]
+
     lngs = parse_lngs(req.lngs)
     new_subs = prune(paths, lngs, site, cache)
     if not new_subs:
