@@ -4,7 +4,7 @@
 To extract previously downloaded subtitles use this command:
 
 ```shell
-ezsub unzip -t Title of Movie or TV Series -l LNG1 [LNG2 ...] -d DESTINATION -a|-A -o|-O -g|-G
+ezsub unzip -t|-T Title of Movie or TV Series -l LNG1 [LNG2 ...] -d DESTINATION -a|-A -o|-O -g|-G
 ```
 
 Procedure is like [download](./Download.md)
@@ -12,10 +12,12 @@ Procedure is like [download](./Download.md)
 ## Switches
 
 - `-t` is title to search. It is required.  
+Also if user knows exact title used in url page, user could give this title by `-T` switch.  
 Examples:
   - `-t riverdale`
   - `-t riverdale first season`
   - `-t godfather`
+  - `-T the-end-of-the-fing-world`
 
 - `-l` is/are "space separated" language(s) that user interested in. It uses abbr.  
 Default: `en`  

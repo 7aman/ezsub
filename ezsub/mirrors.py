@@ -152,7 +152,8 @@ class Mirror(object):
         aggregated = {title.attrs['href']: title.text for title in titles}
         return [{'path': p, 'title': t} for p, t in aggregated.items()]
 
-    def exact_search(self, title):
+    @staticmethod
+    def exact_search(title):
         return (
             [{'path': f"/subtitles/{title}", 'title': ''}], # results
             [1,]   # selected

@@ -21,6 +21,7 @@ from ezsub.errors import (
     GetContentFailed
 )
 
+
 def get_user_loglevel():
     parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument("--loglevel")
@@ -34,6 +35,7 @@ def get_user_loglevel():
         else:
             to_screen(f"Invalid log level {loglevel}. Ignored.", style="warn")
     return ''
+
 
 logging.basicConfig(
     filename=const.LOGFILE,

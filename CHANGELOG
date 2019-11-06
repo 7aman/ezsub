@@ -1,9 +1,14 @@
 -------------------
+v2019.11.08
+
++ fix: add switch '-T' to 'clean' and 'unzip' commands
+
+-------------------
 v2019.11.06
 
 + update: set remind_every to 0 in user.conf to disable update reminder
 + update: show what's new if an update is available
-+ download: new switch '-T' for exact title 
++ download: new switch '-T' for exact title
 
 -------------------
 v2019.11.01

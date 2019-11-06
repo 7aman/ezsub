@@ -38,6 +38,12 @@ class Cache(object):
                 titles.append(item)
         return titles
 
+    def exact_search(self, title):
+        return (
+            [{'path': self.subtitles.joinpath(title).resolve(), 'title': ''}],  # results
+            [1, ]   # selected
+        )
+
     def exists(self, path):
         return self.root.joinpath(path).exists()
 
@@ -48,7 +54,6 @@ class Cache(object):
         if mk_parents:
             path.parent.mkdir(parents=True, exist_ok=True)
         return path.resolve()
-
 
     def delete_empty_folders(self, root=None):
         if not root:

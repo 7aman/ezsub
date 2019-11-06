@@ -10,9 +10,9 @@ In Windows you need to install [python 3.7+](https://www.python.org/downloads/wi
 
 ### 1-2: pip3
 
-`ezsub` is provided as a package on [pypi](https://pypi.org/project/ezsub) and you can install it command tool named `pip`.  
+`ezsub` is provided as a package on [pypi](https://pypi.org/project/ezsub) and you can install it with a command line tool named `pip`.  
 
-In most Linux Distros `pip` has been installed with python itself and user have both pip (that points to pip2) and pip3 installed. In this case use `pip3` because there is no `ezsub` package for pip2.  
+In most Linux Distros `pip` has been installed with python itself. And if both python2 and python3 are installed, user might have both pip (that points to pip2) and pip3 installed. In this case use `pip3` because there is no `ezsub` package for pip2.  
 
 In Windows if you install python 3 from its official installer, you can select if you want to install pip too. After installing just use `pip` or `easy_install` command to install `ezsub` because there is no command named `pip3` in Windows.
 

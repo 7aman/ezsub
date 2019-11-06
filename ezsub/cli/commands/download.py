@@ -6,12 +6,13 @@ from pathlib import Path
 from ezsub import const
 from ezsub.cache import Cache
 from ezsub.mirrors import Mirror
-from ezsub.errors import NoResultError, NothingToDownloadError
 from ezsub.destination import Destination
 from ezsub.utils import to_screen, select, parse_lngs
+from ezsub.errors import NoResultError, NothingToDownloadError
 
 
 cur = const.Curser
+
 
 def download(req):
     site = Mirror(req.site)
@@ -21,13 +22,13 @@ def download(req):
 
     if req.exact:
         results, selected = site.exact_search(req.exact)
-    else: # use title
+    else:  # use title
         results = site.search(req.title)
         selected = select(results, req.auto_select)
 
     if not selected:
         raise NoResultError
-    
+
     paths = [results[s-1]['path'] for s in selected]
 
     lngs = parse_lngs(req.lngs)

@@ -1,7 +1,7 @@
 # Clean
 
 ```shell
-ezsub clean -t TITLE -l LNG1 [LNG2 ...] [-0] -a|-A
+ezsub clean -t|-T TITLE -l LNG1 [LNG2 ...] [-0] -a|-A
 ```
 
 searches cache directory for given title and language. then:

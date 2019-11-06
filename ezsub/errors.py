@@ -52,4 +52,3 @@ class NoSiteIsAvailableError(Exception):
 
 class GetContentFailed(Exception):
     pass
-

@@ -143,7 +143,7 @@ def get_parser():
 
     _ = commands.add_parser(
         'unzip',
-        parents=[title, destination, _open, _ask, _group, lngs],
+        parents=[title, exact, destination, _open, _ask, _group, lngs],
         aliases=['x', 'ex'],
         help='Extract downloaded title.')
 
@@ -161,7 +161,7 @@ def get_parser():
 
     clean = commands.add_parser(
         'clean',
-        parents=[title, lngs, ask],
+        parents=[title, exact, lngs, ask],
         help='Delete downloaded subtitles for a title.')
 
     _ = commands.add_parser(

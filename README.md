@@ -63,7 +63,7 @@ See [here](./wiki/Install.md) for more details.
 ### Download
 
 ```shell
-ezsub dl -t TITLE -l LNG1 [LANG2 ...] -d DESTINATION -s SITE1 [SITE2 ...] -a|-A -o|-O -S -g|G
+ezsub dl -t|-T TITLE -l LNG1 [LANG2 ...] -d DESTINATION -s SITE1 [SITE2 ...] -a|-A -o|-O -S -g|G
 ```
 
 For details on each switch see [this](./wiki/Download.md#Switches)
@@ -102,7 +102,7 @@ ezsub dl -t aquaman -d 'D:\Movies\Aquaman\'
 ### Extract Previously Downloaded Subtitles
 
 ```shell
-ezsub unzip -t Title of Movie or TV Series -l LNG1 [LNG2 ...] -d DESTINATION -a|-A -o|-O -g|-G
+ezsub unzip -t|-T Title of Movie or TV Series -l LNG1 [LNG2 ...] -d DESTINATION -a|-A -o|-O -g|-G
 ```
 
 switches are same as `ezsub dl` [switches](#download) except there is no `-s` and `-S`. `ezsub` searches through `"cache"` folder. Rest is same as the download process.
@@ -144,7 +144,7 @@ ezsub config set Defaults.languages -
 ### Clean
 
 ```shell
-ezsub clean -t TITLE -l LNG1 [LNG2 ...] [-0] -a|-A
+ezsub clean -t|-T TITLE -l LNG1 [LNG2 ...] [-0] -a|-A
 ```
 
 searches cache directory for given title and language. then:

@@ -40,7 +40,7 @@ def show_history():
     with open(const.HISTORY, 'r') as file:
         lines = file.readlines()
     for i, line in enumerate(lines):
-        to_screen(f"{i+1}: {const.PROGRAMNAME} {line[:-1]}") # last character is new line.
+        to_screen(f"{i+1}: {const.PROGRAMNAME} {line[:-1]}")  # last character is new line.
     raise JobDone
 
 

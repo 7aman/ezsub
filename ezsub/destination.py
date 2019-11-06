@@ -22,6 +22,7 @@ from ezsub.errors import (
 logger = logging.getLogger(__name__)
 cur = const.Curser
 
+
 def get_extracor(file):
     if zipfile.is_zipfile(file):
         return zipfile.ZipFile
