@@ -23,7 +23,7 @@ from ezsub.errors import (
 
 cur = const.Curser
 logger = logging.getLogger(__name__)
-
+headers = { 'User-Agent': 'Mozilla/5.0'}
 MDB = {
     'subscene': {
         "base_url": "https://subscene.com",
@@ -38,7 +38,7 @@ MDB = {
         }
     },
     'hastisub': {
-        "base_url": "http://hastisub.top",
+        "base_url": "http://hastisub1.top",
         "query_path": "/subtitles/searchbytitle",
         "method": requests.get,
         "login_path": '',
@@ -67,7 +67,7 @@ MDB = {
     'xyz': {
         "base_url": "https://subscene.xyz",
         "query_path": "/subtitles/searchbytitle",
-        "method": requests.get,
+        "method": requests.post,
         "login_path": '',
         "captcha": '',
         "selectors": {
@@ -168,7 +168,7 @@ class Mirror(object):
     def _get_page_text(self, path, data=None, timeout=const.TIMEOUT, retry=const.RETRY):
         while retry:
             try:
-                page = self.method(self.base_url + path, data=data, timeout=timeout)
+                page = self.method(self.base_url + path, data=data, headers=headers, timeout=timeout)
                 page.encoding = 'utf-8'
                 return page.text
             except Exception as e:
@@ -186,7 +186,7 @@ class Mirror(object):
             to_screen(f"checking '{self.name}': ", end='')
             to_screen(f"{self.base_url}/", style="info", end='')
             to_screen(" is ", end='')
-            r = requests.head(self.base_url, timeout=timeout)
+            r = requests.head(self.base_url, headers=headers, timeout=timeout)
             if r.status_code == requests.codes['ok']:
                 to_screen('OK', style="bold;ok")
                 return True
@@ -203,7 +203,7 @@ class Mirror(object):
         n = len(paths)
         no_links = []
         to_download = []
-        requests = [session.get(self.base_url + path) for path in paths]
+        requests = [session.get(self.base_url + path, headers=headers) for path in paths]
         for i, path in enumerate(paths):
             page_text = requests[i].result().text
             link = self.get_sub_details(page_text)
@@ -230,7 +230,7 @@ class Mirror(object):
 
     def mass_download(self, to_download):
         session = FuturesSession(max_workers=const.MAX_WORKERS)
-        all_requests = [session.get(self.base_url + sub['dlink']) for sub in to_download]
+        all_requests = [session.get(self.base_url + sub['dlink'], headers=headers) for sub in to_download]
         n = len(to_download)
         to_extract = []
         for i, subtitle in enumerate(to_download):
@@ -248,7 +248,7 @@ class Mirror(object):
     def login(self, timeout=const.TIMEOUT):
         session = requests.Session()
         try:
-            session.get(self.base_url + self.login_path, timeout=timeout)
+            session.get(self.base_url + self.login_path, headers=headers, timeout=timeout)
             return session.cookies.get_dict()['idsrv.xsrf']
         except:
             raise LoginFailedError
@@ -268,7 +268,7 @@ class Mirror(object):
 
 def get_soup(url):
     session = FuturesSession(max_workers=const.MAX_WORKERS)
-    req = session.get(url)
+    req = session.get(url, headers=headers)
     r = req.result()
     r.encoding = 'utf-8'
     return BeautifulSoup(r.text, 'html.parser')
