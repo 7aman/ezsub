@@ -1,4 +1,9 @@
 -------------------
+v2020.02.17
+
++ fix: hastisub and xyz are fixed
+
+-------------------
 v2019.11.08
 
 + fix: add switch '-T' to 'clean' and 'unzip' commands

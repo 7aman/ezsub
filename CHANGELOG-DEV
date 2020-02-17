@@ -1,4 +1,9 @@
 -------------------
+v2020.02.17
+
++ user-agent added to requests (xyz was not responding)
+
+-------------------
 v2019.11.08
 
 + just bugfix
