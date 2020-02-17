@@ -6,3 +6,9 @@
 - add beep and color to user.conf then send them to environmental variables to parse in to_screen
 - add ezsub.conf to set not user settings such as log mode, retries, ...
 - show message about bad requests
+- dev script for windows
+- "No result for this title" must be based on actual no result and not server errors
+- update in windows is not applied if called from powershell
+- print out info about uploaders
+- add https://subcenter.xyz/ and https://sub.deltaleech.com
+- save selected title and show on next searchs if it is a match.
