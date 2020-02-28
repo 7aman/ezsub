@@ -181,6 +181,7 @@ def complain(empty=False, dest_list=None, no_unrar=None, bad_files=None):
             if item['url']:
                 to_screen(f"           downloaded from: {item['url']}", style="info")
             shutil.copy2(str(item['path']), str(item['dest']))
+            item['path'].unlink()
 
 
 def remove_same(paths):
