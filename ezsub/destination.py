@@ -81,9 +81,9 @@ class Destination(object):
 
         path = str(self.root.resolve())
         if const.OS == 'Windows':
-            app = 'explorer',
+            app = 'explorer'
         elif const.OS == 'Darwin':
-            app = 'open',
+            app = 'open'
         else:
             app = 'xdg-open'
         to_screen("opening destination... ", end='')
