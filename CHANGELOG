@@ -1,4 +1,10 @@
 -------------------
+v2020.02.28
+
++ fix: open destination is fixed
++ fix: bad compressed files are deleted from cache folder
+
+-------------------
 v2020.02.17
 
 + fix: hastisub and xyz are fixed
