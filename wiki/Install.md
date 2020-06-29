@@ -4,7 +4,7 @@
 
 ### 1-1: python 3.7+
 
-`ezsub` is written in python 3 language.  
+`ezsub` is written in python 3.  
 Python is usually pre-installed in many linux distributions but it might be the deprecating version 2. In this case please install python 3.7+.  
 In Windows you need to install [python 3.7+](https://www.python.org/downloads/windows).  
 

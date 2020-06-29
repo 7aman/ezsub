@@ -5,15 +5,15 @@
 So many volunteered translators make subtitles and upload them on websites like [subscene](https://subscene.com).  
 But downloading subtitles for each episode of a TV series or many versions of a movie is a long procedure. You have to:
 
-```
+``` pseudocode
 do {
 
     visit main page of the site
     search a title
     select a match
-    go to matched page
+    go to the selected page
     look over maybe 100 or 1000 subtitles on this page, even they are not in your desired language
-    choose which subs match your language, episode, encoder, uploader
+    choose which subtitless match your language, episode, encoder, uploader
     open them in new tabs
     click the download buttons and save them
     extract them

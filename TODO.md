@@ -10,5 +10,7 @@
 - "No result for this title" must be based on actual no result and not server errors
 - update in windows is not applied if called from powershell
 - print out info about uploaders
-- add https://subcenter.xyz/ and https://sub.deltaleech.com
-- save selected title and show on next searchs if it is a match.
+- add [subcenter](https://subcenter.xyz/) and [deltaleech](https://sub.deltaleech.com)
+- save selected title and show on next searches if it is a match.
+- config command checks option could change, shows options, shows valid values if given one is invalid
+- add history comand to wiki and main README
