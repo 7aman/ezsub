@@ -15,11 +15,13 @@ class Cache(object):
         self.root = root
         self.subtitles = root.joinpath('subtitles')
         self.subtitles.mkdir(parents=True, exist_ok=True)
+        emptied = True
+        while emptied:
+            emptied = self.delete_empty_folders()
 
     def search(self, title):
         to_screen("[cache] ", end='')
         to_screen(f"{self.subtitles}", style="info")
-        self.delete_empty_folders()
         if self.is_empty(self.subtitles):
             raise CacheIsEmptyError
 
@@ -44,6 +46,11 @@ class Cache(object):
             [1, ]   # selected
         )
 
+    def all_titles(self):
+        results = [{'path': child.resolve(), 'title': get_title(child)} for child in self.subtitles.iterdir()]
+        selected = list(range(1, 1+len(results)))
+        return results, selected
+
     def exists(self, path):
         return self.root.joinpath(path).exists()
 
@@ -56,17 +63,17 @@ class Cache(object):
         return path.resolve()
 
     def delete_empty_folders(self, root=None):
+        emptied = False
         if not root:
             root = self.subtitles
         for child in root.iterdir():
             if child.is_dir():
                 if self.is_empty(child):
                     child.rmdir()
+                    emptied = True
                 else:
-                    self.delete_empty_folders(child)
-            else:
-                return None
-        return None
+                    emptied = emptied or self.delete_empty_folders(child)
+        return emptied
 
     @staticmethod
     def _get_match_score(title, target):

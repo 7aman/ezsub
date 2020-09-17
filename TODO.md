@@ -14,3 +14,5 @@
 - save selected title and show on next searches if it is a match.
 - config command checks option could change, shows options, shows valid values if given one is invalid
 - add history comand to wiki and main README
+- accept '*' for -l to select all available languages
+- add restore command to restore backup

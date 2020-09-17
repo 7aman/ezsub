@@ -238,6 +238,11 @@ def get_parser():
         dest='zero',
         action='store_true',
         help="do not delete, just empty the files.")
+    clean.add_argument(
+        "--all",
+        dest='all',
+        action='store_true',
+        help="clean all titles.")
 
     history_commands = history.add_subparsers(
         dest="subcommand",
@@ -269,6 +274,15 @@ class CliArgs(UserConf):
         logger.info("new call: 'ezsub %s'", " ".join(argv))
         args, _ = parser.parse_known_args(argv)
         self.command = args.command
+
+        if args.command in ['d', 'dl', 'download', 'unzip', 'x']:
+            if not (args.title or args.exact):
+                parser.error("\r\n\tmissing title. give a title with -t or -T.\r\n")
+
+        if args.command in ['clean',]:
+            if not (args.title or args.exact or args.all):
+                parser.error("\r\n\tmissing title. give a title with -t or -T.\r\n\talso '--all' for cleaning all titles.\r\n")
+
         if args.__contains__('title'):
             if args.title:
                 if args.exact:
@@ -320,6 +334,9 @@ class CliArgs(UserConf):
 
         if args.__contains__('zero'):
             self.zero = args.zero
+
+        if args.__contains__('all'):
+            self.all = args.all
 
         if args.__contains__('simulation'):
             self.simulation = args.simulation

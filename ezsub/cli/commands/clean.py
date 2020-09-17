@@ -8,7 +8,21 @@ from ezsub.utils import to_screen, select, parse_lngs, get_size, human_readable
 
 def clean(req):
     cache = Cache()
-    if req.exact:
+    if req.all:
+        to_screen("Just for your information:", style='blue;bold')
+        to_screen("You can make a back-up from your current cache by calling:", style='warn')
+        to_screen("\tezsub backup -o", style='ok')
+        if not req.zero:
+            to_screen("Also it is recommended to use clean command with --zero switch", style='warn')
+            to_screen("to have track of previously downloaded subtitles.", style='warn')
+            to_screen("\tezsub clean --all --zero", style='ok')
+        to_screen("\r\nAre you sure to delete all previously downladed subtitles? (y/N): ", style='red;bold', end='')
+        answer = input('')
+        if answer.lower() not in ['y', 'yes']:
+            to_screen("\r\nCancelled.", style="info")
+            return None
+        results, selected = cache.all_titles()
+    elif req.exact:
         results, selected = cache.exact_search(req.exact)
     else:  # use title
         results = cache.search(req.title)
@@ -31,7 +45,6 @@ def clean(req):
     else:
         action = cache.delete(files)
 
-    cache.delete_empty_folders()
     size_after = get_size(cache.subtitles)
     to_screen(f"\n{human_readable(size_before-size_after)} freed by {action} files.\n", style='warn')
 

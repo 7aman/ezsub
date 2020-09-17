@@ -111,7 +111,11 @@ def windows_size(path):
         f"ls {path} -r | measure -s Length | select -ExpandProperty Sum"
     ]
     size = subprocess.check_output(command)
-    return int(size)
+    if size:
+        return int(size)
+    else:
+        return 0
+    
 
 
 def unix_size(path):
