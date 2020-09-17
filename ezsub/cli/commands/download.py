@@ -90,4 +90,6 @@ def count_each_language(results, lngs):
     for link in results:
         language = link.split('/')[-2]
         splitted[mapper[language]] += 1
+    # remove empty languages
+    splitted = {key: value for key, value in splitted.items() if value}
     return splitted

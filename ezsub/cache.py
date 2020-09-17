@@ -124,6 +124,8 @@ def count_each_language(result, lngs):
     for file in result:
         language = file['path'].parent.name
         splitted[mapper[language]] += 1
+    # remove empty languages
+    splitted = {key: value for key, value in splitted.items() if value}
     return splitted
 
 

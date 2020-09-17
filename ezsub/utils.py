@@ -37,7 +37,9 @@ def is_valid_lng(lng):
 
 def parse_lngs(lngs_string):
     lngs = lngs_string.split()
-    parsed = {}
+    parsed = dict()
+    if "*" in lngs:
+        return const.LANGUAGE_PAIRS
     for lng in lngs:
         if is_valid_lng(lng):
             parsed[lng] = abbr2full(lng)
@@ -108,7 +110,7 @@ def windows_size(path):
         'powershell',
         '-noprofile',
         '-command',
-        f"ls {path} -r | measure -s Length | select -ExpandProperty Sum"
+        f"Get-ChildItem -File -Recurse {path} | Measure-Object -Sum -Property Length | Select-Object -ExpandProperty Sum"
     ]
     size = subprocess.check_output(command)
     if size:

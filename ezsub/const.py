@@ -75,9 +75,9 @@ LANGUAGE_PAIRS = {
     "no": "norwegian",
     "sv": "swedish",
     "vi": "vietnamese",
-    "big5": "big_5_code"
+    "big5": "big_5_code",
 }
-SUPPORTED_LNGS = list(LANGUAGE_PAIRS.keys())
+SUPPORTED_LNGS = ["*",] + list(LANGUAGE_PAIRS.keys())[:]
 TODAY = datetime.now()
 TODAY_STAMP = str(int(TODAY.timestamp()))
 TODAY_TIMEADD = TODAY.strftime('%Y%m%d-%H%M')
