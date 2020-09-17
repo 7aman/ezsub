@@ -9,8 +9,8 @@ from datetime import datetime
 # setup.py and pypi will remove leading zero in month and day.
 # But we keep leading zeroes in calver like YYYY.MM.DD also in changelog and tags.
 # In what's new this format is tested
-__version__ = '2020.02.28'
-SEMVER = '0.2.2'
+__version__ = '2020.09.17'
+SEMVER = '0.3.0'
 CALVER = __version__
 __author__ = 'Zaman'
 __contact__ = '7amaaan@gmail.com'
@@ -165,7 +165,7 @@ SIGNS = [
 BAD = [
     "Bad request"
 ]
-MAX_WORKERS = 1
+MAX_WORKERS = 8
 
 
 # colors and text formats

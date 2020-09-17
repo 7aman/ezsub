@@ -10,3 +10,4 @@
   * [Info](./Info.md)
   * [Update](./Update.md)
   * [Backup](./Backup.md)
+  * [History](./History.md)

@@ -15,3 +15,4 @@
 - config command checks option could change, shows options, shows valid values if given one is invalid
 - add history comand to wiki and main README
 - add restore command to restore backup
+- add "Max worker" to user.conf

@@ -1,4 +1,13 @@
 -------------------
+v2020.09.17
+
++ clean: add --all to clean all
++ mirrors: remove 'xyz' and add deltaleech
+
++ now you can use '*' by language ('-l') switch to select all languages
++ fix: missing title is raising a warning now
+
+-------------------
 v2020.02.28
 
 + fix: open destination is fixed

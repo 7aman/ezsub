@@ -36,6 +36,7 @@ Examples:
   - `-T the-end-of-the-fing-world`
 
 - `-l` is/are "space separated" language(s) that user interested in. It uses abbr.  
+Also `*` means all supported or available languages.  
 Default: `en`  
 Examples:
   - `-l en fa it`

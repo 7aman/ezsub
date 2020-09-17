@@ -24,6 +24,7 @@ For more details see [How ezsub Works](./wiki/How-ezsub-Works.md).
   * [Clean: `ezsub clean`](#Clean)
   * [Update: `ezsub update`](#Update)
   * [Backup: `ezsub backup`](#Backup)
+  * [History: `ezsub history`](#History)
 * [Report Errors](#report-errors)
 
 <hr/>
@@ -145,12 +146,15 @@ ezsub config set Defaults.languages -
 
 ```shell
 ezsub clean -t|-T TITLE -l LNG1 [LNG2 ...] [-0] -a|-A
+ezsub clean --all -l LNG1 [LNG2 ...] [-0] -a|-A
 ```
 
 searches cache directory for given title and language. then:
 
 * with `-0` or `--zero` it will replace each downloaded files with empty zip files.
 * without `-0` it will delete downloaded files completely.
+
+If you want to delete or empty all subtitles use `--all` switch.  
 
 ### Update
 
@@ -164,6 +168,24 @@ Also if last check was before 7 days ago, at next call it warns user to check fo
 ### Backup
 
 Create a zip archive from cache folder. It accepts `-d` option for destination and `-o|-O` for opening destination folder after backup is completed.
+
+### History
+
+To check history of previously called ezsub command.  
+
+```shell
+# show previous calls
+ezsub history show
+# or simply:
+ezsub history
+
+# select a previous call [its line number] to run again.
+ezsub history run NUMBER
+
+# short version
+ezsub h show|run
+```
+
 
 <hr/>
 
