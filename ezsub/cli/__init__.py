@@ -18,7 +18,9 @@ from ezsub.errors import (
     NoResultError,
     CacheIsEmptyError,
     NoSiteIsAvailableError,
-    GetContentFailed
+    GetContentFailed,
+    ForciblyClosedError,
+    NetworkError
 )
 
 
@@ -84,6 +86,10 @@ def main():
         to_screen("\nSites are not accessible. check internet connection.", style="red;bold")
     except GetContentFailed:
         to_screen("\nGetting page content is failed. try later.", style="red")
+    except ForciblyClosedError:
+        to_screen("\nServer closed connections forcibly :(", style="red")
+    except NetworkError:
+        to_screen("\nNetwork error. See log for more details.", style="red")
     except JobDone:
         pass
     except WrongLineNumberError:

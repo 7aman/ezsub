@@ -18,7 +18,9 @@ from ezsub.errors import (
     LoginFailedError,
     NoSiteIsAvailableError,
     GetContentFailed,
-    NoResultError
+    NoResultError,
+    ForciblyClosedError,
+    NetworkError
 )
 
 cur = const.Curser
@@ -64,8 +66,9 @@ MDB = {
             "btn": "a[id='downloadButton']"
         }
     },
-    'xyz': {
-        "base_url": "https://subscene.xyz",
+    'delta':
+    {
+        "base_url": "https://sub.deltaleech.com",
         "query_path": "/subtitles/searchbytitle",
         "method": requests.post,
         "login_path": '',
@@ -205,7 +208,16 @@ class Mirror(object):
         to_download = []
         requests = [session.get(self.base_url + path, headers=headers) for path in paths]
         for i, path in enumerate(paths):
-            page_text = requests[i].result().text
+            try:
+                page_text = requests[i].result().text
+            except ConnectionResetError as e:
+                logger.warn(e)
+                logger.debug(traceback.format_exc())
+                raise ForciblyClosedError
+            except Exception as e:
+                logger.warn(e)
+                logger.debug(traceback.format_exc())
+                raise NetworkError
             link = self.get_sub_details(page_text)
             url = self.base_url + path
             to_screen(f"\rgetting subtitles info... {i+1}/{n}", end='')  # progress
@@ -236,8 +248,18 @@ class Mirror(object):
         for i, subtitle in enumerate(to_download):
             file = subtitle['path']
             to_screen(f"\rdownloading... {i+1}/{n}", end='')  # progress
-            with open(file, "w+b") as f:
+            try:
                 file_content = all_requests[i].result().content
+            except ConnectionResetError as e:
+                logger.warn(e)
+                logger.debug(traceback.format_exc())
+                raise ForciblyClosedError
+            except Exception as e:
+                logger.warn(e)
+                logger.debug(traceback.format_exc())
+                raise NetworkError
+
+            with open(file, "w+b") as f:                
                 f.write(file_content)
             to_extract.append(subtitle)
         else:

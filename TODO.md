@@ -10,9 +10,8 @@
 - "No result for this title" must be based on actual no result and not server errors
 - update in windows is not applied if called from powershell
 - print out info about uploaders
-- add [subcenter](https://subcenter.xyz/) and [deltaleech](https://sub.deltaleech.com)
+- add [deltaleech](https://sub.deltaleech.com)
 - save selected title and show on next searches if it is a match.
 - config command checks option could change, shows options, shows valid values if given one is invalid
 - add history comand to wiki and main README
-- accept '*' for -l to select all available languages
 - add restore command to restore backup

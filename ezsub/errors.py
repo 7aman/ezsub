@@ -52,3 +52,10 @@ class NoSiteIsAvailableError(Exception):
 
 class GetContentFailed(Exception):
     pass
+
+
+class NetworkError(Exception):
+    pass
+
+class ForciblyClosedError(Exception):
+    pass

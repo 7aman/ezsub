@@ -43,7 +43,7 @@ LOGLEVEL = 'INFO'
 LOGFILEMODE = 'a'
 LOGFORMAT = "[%(asctime)s][%(levelname)s]{%(name)s:%(lineno)d}# %(message)s"
 DESTINATION = get_destination()
-MIRRORS = ['subscene', 'hastisub', 'subf2m', 'xyz']
+MIRRORS = ['subscene', 'hastisub', 'subf2m', 'delta']
 SITE = MIRRORS[0]
 AUTO_SELECT = False
 OPEN_AFTER = True
@@ -165,7 +165,7 @@ SIGNS = [
 BAD = [
     "Bad request"
 ]
-MAX_WORKERS = 8
+MAX_WORKERS = 1
 
 
 # colors and text formats

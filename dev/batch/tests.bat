@@ -4,7 +4,7 @@ REM ezsub login
 ezsub cfg set Defaults.group True
 ezsub cfg set Defaults.auto_select True
 ezsub cfg set Defaults.open_after False
-ezsub cfg set Defaults.site subscene hastisub subf2m xyz
+ezsub cfg set Defaults.site subscene hastisub subf2m delta
 ezsub cfg set Defaults.lngs en fa
 ezsub clean -t wilderpeople
 ezsub dl -t wilderpeople
@@ -19,5 +19,5 @@ ezsub h show
 ezsub cfg set Defaults.group True
 ezsub cfg set Defaults.auto_select False
 ezsub cfg set Defaults.open_after True
-ezsub cfg set Defaults.site hastisub subf2m xyz
+ezsub cfg set Defaults.site hastisub subf2m delta
 ezsub cfg set Defaults.lngs en fa

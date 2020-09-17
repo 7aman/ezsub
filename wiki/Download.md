@@ -53,7 +53,7 @@ Default: `subscene`
 Other options:
   - `-s subf2m`
   - `-s hastisub`
-  - `-s xyz`
+  - `-s delta`
 
 - `-o` or `-O` determines if `ezsub` must open the folder that subtitles are extracted into.  
 Default: True (Open)

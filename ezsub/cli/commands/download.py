@@ -8,7 +8,7 @@ from ezsub.cache import Cache
 from ezsub.mirrors import Mirror
 from ezsub.destination import Destination
 from ezsub.utils import to_screen, select, parse_lngs
-from ezsub.errors import NoResultError, NothingToDownloadError
+from ezsub.errors import NoResultError, NothingToDownloadError, NetworkError
 
 
 cur = const.Curser
@@ -46,7 +46,10 @@ def download(req):
             to_screen("\rcreating empty zip files... ", end='')
             to_screen(f"{cur.CFH}done", style='ok')
     else:
-        to_download = site.mass_request(new_subs)
+        try:
+            to_download = site.mass_request(new_subs)
+        except Exception as error:
+            raise error
         for index, item in enumerate(to_download):
             to_download[index]['path'] = cache.get_child(f"{item['path']}.zip", mk_parents=True)
         to_extract = site.mass_download(to_download)
